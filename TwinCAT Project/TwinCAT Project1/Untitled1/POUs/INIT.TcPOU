@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.0">
+  <POU Name="INIT" Id="{3b059d6e-df57-48e3-9ab2-0a0ee4a6126f}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM INIT
+VAR
+	MCPower_Xa : MC_Power;
+	MCPower_Xb : MC_Power;
+	MCPower_Y : MC_Power;
+	MCPower_Z : MC_Power;
+	
+	MCResetXa: MC_Reset;
+	MCResetXb: MC_Reset;
+	MCResetY: MC_Reset;
+	MCResetZ: MC_Reset;
+	
+	fb_MCGearIn: MC_GearIn;
+	fb_MCGearOut: MC_GearOut;
+
+	fb_MCHOME_X: MC_Home;
+	fb_MCHOME_Y: MC_Home;
+
+	bEN		: BOOL;
+	bENCouple : BOOL;
+	bReset	: BOOL;
+	bGearIn : BOOL;
+	bHome	: BOOL;
+		
+	fb_BuildGroup: CfgBuild3DGroup;
+	fb_ReconfigGroup: CfgReconfigGroup;
+	fb_LoadProg: ItpLoadProgEx;
+	fb_StartStop: ItpStartStopEx;
+	fb_Reset: ItpResetEx2;
+	
+	bBuildGroup: BOOL;
+	bLoad: BOOL;
+	bStart: BOOL;
+	bStop: BOOL;
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[MCPower_Xa(
+	Axis:= GVL.As_Xa, 
+	Enable:= bENCouple OR bEN, 
+	Enable_Positive:= bENCouple OR bEN, 
+	Enable_Negative:= bENCouple OR bEN, 
+	Override:= 100 );
+	
+MCPower_Xb(
+	Axis:= GVL.As_Xb, 
+	Enable:= bENCouple OR bEN, 
+	Enable_Positive:= bENCouple OR bEN, 
+	Enable_Negative:= bENCouple OR bEN, 
+	Override:= 100 );
+	
+MCPower_Y(
+	Axis:= GVL.As_Y, 
+	Enable:= bENCouple OR bEN, 
+	Enable_Positive:= bENCouple OR bEN, 
+	Enable_Negative:= bENCouple OR bEN, 
+	Override:= 100 );
+	
+MCPower_Z(
+	Axis:= GVL.As_Z, 
+	Enable:= bENCouple OR bEN, 
+	Enable_Positive:= bENCouple OR bEN, 
+	Enable_Negative:= bENCouple OR bEN, 
+	Override:= 100 );
+	
+MCResetXa(
+	Axis:= GVL.As_Xa, 
+	Execute:= bReset );
+	
+MCResetXb(
+	Axis:= GVL.As_Xb, 
+	Execute:= bReset );
+
+MCResetY(
+	Axis:= GVL.As_Y, 
+	Execute:= bReset );
+
+MCResetZ(
+	Axis:= GVL.As_Z, 
+	Execute:= bReset );
+	
+fb_MCGearIn(
+	Master:= GVL.As_Xa, 
+	Slave:= GVL.As_Xb, 
+	Execute:= bENCouple OR bGearIn, 
+	RatioNumerator:= 1, 
+	RatioDenominator:= 1 );
+	
+fb_MCGearOut(
+	Slave:= GVL.As_Xb,
+	Execute:= NOT(bENCouple OR bGearIn) );
+	
+fb_MCHOME_X(
+	Axis:= GVL.As_Xa, 
+	Execute:= ( bHome OR COM.doHome ) AND ( bENCouple OR bGearIn ), 
+	Position:= 0, 
+	bCalibrationCam:= GVL.bX1 );
+	
+fb_MCHOME_Y(
+	Axis:= GVL.As_Y, 
+	Execute:= ( bHome OR COM.doHome ) AND ( bENCouple OR bGearIn ), 
+	Position:= 0, 
+	bCalibrationCam:= GVL.bY1 );
+	
+NCI();]]></ST>
+    </Implementation>
+    <Action Name="NCI" Id="{0a476b1d-5d22-40e9-8fc8-41c272298df5}">
+      <Implementation>
+        <ST><![CDATA[fb_BuildGroup(
+	bExecute:= bBuildGroup, 
+	nGroupId:= GVL.ChannelInput.GrpId, 
+	nXAxisId:= GVL.As_Xa.NcToPlc.AxisId, 
+	nYAxisId:= GVL.As_Y.NcToPlc.AxisId, 
+	nZAxisId:= GVL.As_Z.NcToPlc.AxisId, 
+	tTimeOut:= T#1S );
+	
+fb_ReconfigGroup(
+	bExecute:= NOT(bBuildGroup), 
+	nGroupId:= GVL.ChannelInput.GrpId, 
+	tTimeOut:= T#1S );
+	
+ItpSetOverridePercent(fOverridePercent:= 100, sPlcToNci:= GVL.ChannelOutput);
+
+fb_LoadProg(
+	sNciToPlc:= GVL.ChannelInput, 
+	bExecute:= bLoad, 
+	sPrg:= '\HARD DISK\TWINCAT\Mc\Nci\Gcode_test1.nc', 
+	nLength:= LEN('\HARD DISK\TWINCAT\Mc\Nci\Gcode_test1.nc'), 
+	tTimeOut:= T#1S );
+	
+fb_StartStop(
+	bStart:= bStart, 
+	bStop:= bStop, 
+	tTimeOut:= T#1S, 
+	sNciToPlc:= GVL.ChannelInput );
+	
+fb_Reset(
+	bExecute:= bReset, 
+	tTimeOut:= T#1S, 
+	sNciToPlc:= GVL.ChannelInput );
+]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="INIT">
+      <LineId Id="9" Count="53" />
+      <LineId Id="72" Count="12" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="INIT.NCI">
+      <LineId Id="2" Count="31" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

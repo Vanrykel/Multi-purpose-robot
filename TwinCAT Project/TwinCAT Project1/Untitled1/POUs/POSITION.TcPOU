@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
+  <POU Name="POSITION" Id="{dcdb846a-b2b0-4a62-a844-29da34618f55}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM POSITION
+VAR
+	MoveRel_X : MC_MoveRelative;
+	MoveRel_Y : MC_MoveRelative;
+	MoveRel_Z : MC_MoveRelative;
+	
+	MoveAbs_X : MC_MoveAbsolute;
+	MoveAbs_Y : MC_MoveAbsolute;
+	MoveAbs_Z : MC_MoveAbsolute;
+	
+	SetZToZero 	: MC_SetPosition;
+	SetZpos		: BOOL;
+	
+	DoRel_X : BOOL;
+	DoRel_Y : BOOL;
+	DoRel_Z : BOOL;
+	
+	DoAbs_X : BOOL;
+	DoAbs_Y : BOOL;
+	DoAbs_Z : BOOL;
+
+	Busy : BOOL;
+	Done : BOOL;
+	
+	abs_X : INT := 0;
+	abs_Y : INT := 0;
+	abs_Z : INT := 0;
+	
+	Rel_X : INT := 0;
+	Rel_Y : INT := 0;
+	Rel_Z : INT := 5;
+	
+	vel_X : INT := 200;
+	vel_Y : INT := 200;
+	vel_Z : INT := 3;
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//jog 
+
+IF(	MoveRel_X.Busy OR MoveAbs_X.Busy OR	MoveRel_Y.Busy OR MoveAbs_Y.Busy OR	MoveRel_Z.Busy OR MoveAbs_Z.Busy )THEN
+	Busy := TRUE;
+	Done := FALSE;
+ELSE
+	Busy := FALSE;
+	Done := TRUE;
+END_IF
+
+//X			
+MoveRel_X(Axis := GVL.As_Xa,	
+		Execute := DoRel_X AND ( (INIT.bGearIn AND INIT.bEN) OR INIT.bENCouple ),
+		Distance := Rel_X,
+		Velocity := vel_X);
+		
+MoveAbs_X(Axis := GVL.As_Xa,
+		Execute := DoAbs_X AND ( (INIT.bGearIn AND INIT.bEN) OR INIT.bENCouple ),
+		Position := abs_X,
+		Velocity := vel_X);
+		
+//Y
+MoveRel_Y(Axis := GVL.As_Y,
+		Execute := DoRel_Y AND (INIT.bEN OR INIT.bENCouple),
+		Distance := Rel_Y,
+		Velocity := vel_Y);
+		
+MoveAbs_Y(Axis := GVL.As_Y,
+		Execute := DoAbs_Y AND (INIT.bEN OR INIT.bENCouple),
+		Position := abs_Y,
+		Velocity := vel_Y);
+
+//Z
+MoveRel_Z(Axis := GVL.As_Z,
+		Execute := DoRel_Z AND (INIT.bEN OR INIT.bENCouple),
+		Distance := Rel_Z,
+		Velocity := vel_Z);
+		
+MoveAbs_Z(Axis := GVL.As_Z,
+		Execute := DoAbs_Z AND (INIT.bEN OR INIT.bENCouple),
+		Position := abs_Z,
+		Velocity := vel_Z);
+		
+//set Z postition to zero
+SetZToZero(Axis := GVL.As_Z, 
+			Execute := SetZpos,
+			Position := 0, 
+			Mode := FALSE);]]></ST>
+    </Implementation>
+    <LineIds Name="POSITION">
+      <LineId Id="264" Count="0" />
+      <LineId Id="52" Count="2" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="56" Count="1" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="144" Count="0" />
+      <LineId Id="126" Count="0" />
+      <LineId Id="130" Count="2" />
+      <LineId Id="136" Count="4" />
+      <LineId Id="127" Count="0" />
+      <LineId Id="145" Count="1" />
+      <LineId Id="148" Count="2" />
+      <LineId Id="154" Count="4" />
+      <LineId Id="147" Count="0" />
+      <LineId Id="163" Count="5" />
+      <LineId Id="172" Count="3" />
+      <LineId Id="178" Count="0" />
+      <LineId Id="214" Count="1" />
+      <LineId Id="217" Count="0" />
+      <LineId Id="222" Count="0" />
+      <LineId Id="226" Count="0" />
+      <LineId Id="224" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

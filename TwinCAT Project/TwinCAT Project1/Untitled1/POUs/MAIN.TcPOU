@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
+  <POU Name="MAIN" Id="{f3e90440-582f-45a4-ac51-5f2449296ba8}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	
+END_VAR
+
+    ]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//main program
+INIT();
+
+//SUBMQTT Connection and receiving
+//submqtt();
+
+//FTP
+FTP();
+
+//AT COmmands decoder
+//commandDecoder();
+
+//Get positions
+POSITION();
+
+//Error
+ERROR();]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="307" Count="0" />
+      <LineId Id="177" Count="0" />
+      <LineId Id="308" Count="0" />
+      <LineId Id="300" Count="0" />
+      <LineId Id="295" Count="0" />
+      <LineId Id="332" Count="1" />
+      <LineId Id="331" Count="0" />
+      <LineId Id="309" Count="0" />
+      <LineId Id="301" Count="0" />
+      <LineId Id="299" Count="0" />
+      <LineId Id="316" Count="0" />
+      <LineId Id="315" Count="0" />
+      <LineId Id="317" Count="0" />
+      <LineId Id="324" Count="0" />
+      <LineId Id="323" Count="0" />
+      <LineId Id="325" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
