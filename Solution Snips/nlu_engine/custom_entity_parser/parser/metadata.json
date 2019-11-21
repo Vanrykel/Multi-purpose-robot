@@ -1,0 +1,32 @@
+{
+  "parsers_metadata": [
+    {
+      "entity_identifier": "Algemeen",
+      "entity_parser": "parser_1"
+    },
+    {
+      "entity_identifier": "Difference",
+      "entity_parser": "parser_2"
+    },
+    {
+      "entity_identifier": "Lijmen_Frezen_tekenen",
+      "entity_parser": "parser_3"
+    },
+    {
+      "entity_identifier": "Magneet_Zuignap",
+      "entity_parser": "parser_4"
+    },
+    {
+      "entity_identifier": "Object",
+      "entity_parser": "parser_5"
+    },
+    {
+      "entity_identifier": "Scan",
+      "entity_parser": "parser_6"
+    },
+    {
+      "entity_identifier": "getal",
+      "entity_parser": "parser_7"
+    }
+  ]
+}

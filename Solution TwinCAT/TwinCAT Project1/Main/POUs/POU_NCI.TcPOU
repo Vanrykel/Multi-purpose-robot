@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
+  <POU Name="POU_NCI" Id="{9c84d0cd-cbbc-4c86-9c9d-2561bd9b238b}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM POU_NCI
+VAR
+	
+	fb_BuildGroup: CfgBuild3DGroup;
+	fb_ReconfigGroup: CfgReconfigGroup;
+	fb_LoadProg: ItpLoadProgEx;
+	fb_StartStop: ItpStartStopEx;
+	fb_Reset: ItpResetEx2;
+	
+	bBuildGroup: BOOL;
+	bLoad: BOOL;
+	bStart: BOOL;
+	bStop: BOOL;
+	bReset: BOOL;
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[fb_BuildGroup(
+	bExecute:= bBuildGroup, 
+	nGroupId:= GVL.ChannelInput.GrpId, 
+	nXAxisId:= GVL.As_Xa.NcToPlc.AxisId, 
+	nYAxisId:= GVL.As_Y.NcToPlc.AxisId, 
+	nZAxisId:= GVL.As_Z.NcToPlc.AxisId, 
+	tTimeOut:= T#1S );
+	
+fb_ReconfigGroup(
+	bExecute:= NOT(bBuildGroup), 
+	nGroupId:= GVL.ChannelInput.GrpId, 
+	tTimeOut:= T#1S );
+	
+ItpSetOverridePercent(fOverridePercent:= 100, sPlcToNci:= GVL.ChannelOutput);
+
+fb_LoadProg(
+	sNciToPlc:= GVL.ChannelInput, 
+	bExecute:= bLoad, 
+	sPrg:= '\HARD DISK\TWINCAT\Mc\Nci\Gcode_test1.nc', 
+	nLength:= LEN('\HARD DISK\TWINCAT\Mc\Nci\Gcode_test1.nc'), 
+	tTimeOut:= T#1S );
+	
+fb_StartStop(
+	bStart:= bStart, 
+	bStop:= bStop, 
+	tTimeOut:= T#1S, 
+	sNciToPlc:= GVL.ChannelInput );
+	
+fb_Reset(
+	bExecute:= bReset, 
+	tTimeOut:= T#1S, 
+	sNciToPlc:= GVL.ChannelInput );
+]]></ST>
+    </Implementation>
+    <LineIds Name="POU_NCI">
+      <LineId Id="7" Count="6" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="19" Count="3" />
+      <LineId Id="25" Count="1" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="30" Count="5" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="41" Count="4" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="51" Count="3" />
+      <LineId Id="57" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

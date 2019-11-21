@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4022.17">
+  <POU Name="submqtt" Id="{b25b119c-01a2-473b-b941-f528545f47ef}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM submqtt
+VAR
+	fbMqttClient : FB_IotMqttClient;
+	bSetParameter : BOOL := TRUE;
+	bConnect : BOOL := TRUE;
+	
+	(* received message *)
+	bSubscribed : BOOL;
+	sTopicSub : STRING(255) := 'hermes/intent/#';//GeneraalAlfa:machineState
+	{attribute 'TcEncoding':='UTF-8'}
+	sTopicRcv : STRING(255);
+	{attribute 'TcEncoding':='UTF-8'}
+	sPayloadRcv : STRING(2047);
+	fbMessageQueue : FB_IotMqttMessageQueue;
+	fbMessage : FB_IotMqttMessage;
+	
+	hrErrorOccurred : HRESULT; // contains the latest occurred error
+	
+	(* JSON *)
+	fbJson 			: FB_JsonDomParser;
+	jsonDoc 		: SJsonValue;
+	jsonProp		: SJsonValue;
+	jsonValue		: SJsonValue;
+	bHasMember		: BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF bSetParameter THEN
+	bSetParameter := FALSE;
+	fbMqttClient.sHostName:= '169.254.239.248';
+	fbMqttClient.nHostPort:= 1883;
+//	fbMqttClient.sClientId:= 'POZ_PLC'; 
+	fbMqttClient.sTopicPrefix:= ''; 
+//	fbMqttClient.nKeepAlive:= 60; 
+//	fbMqttClient.sUserName:= ;
+//	fbMqttClient.sUserPassword:= ; 
+//	fbMqttClient.stWill:= ; 
+//	fbMqttClient.stTLS:= ;
+	fbMqttClient.ipMessageQueue := fbMessageQueue;
+END_IF
+
+fbMqttClient.Execute(bConnect);
+IF fbMqttClient.bError THEN
+	// add your error logging here
+	hrErrorOccurred := fbMqttClient.hrErrorCode;
+END_IF
+
+IF fbMessageQueue.nQueuedMessages > 0 THEN
+	IF fbMessageQueue.Dequeue(fbMessage:=fbMessage) THEN
+		fbMessage.GetTopic(pTopic:=ADR(sTopicRcv), nTopicSize:=SIZEOF(sTopicRcv) );
+		fbMessage.GetPayload(pPayload:=ADR(sPayloadRcv), nPayloadSize:=SIZEOF(sPayloadRcv), bSetNullTermination:=FALSE);
+	END_IF
+END_IF
+
+IF fbMqttClient.bConnected THEN
+	IF NOT bSubscribed THEN
+		bSubscribed := fbMqttClient.Subscribe(sTopic:=sTopicSub, eQoS:=TcIotMqttQos.AtMostOnceDelivery);
+		IF fbMqttClient.bError THEN
+			// add your error logging here
+			hrErrorOccurred := fbMqttClient.hrErrorCode;
+		END_IF
+	END_IF
+END_IF
+
+(* Retrieve JSON content *)
+jsonDoc := fbJson.ParseDocument(sPayloadRcv);
+bHasMember := fbJson.HasMember(jsonDoc, 'input');
+IF (bHasMember) THEN
+	  bHasMember := FALSE;
+	  jsonProp := fbJson.FindMember(jsonDoc, 'input');
+	  GVL.stReceivedData := fbJson.GetString(jsonProp);
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="submqtt">
+      <LineId Id="32" Count="43" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

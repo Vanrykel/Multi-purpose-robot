@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="FTP" Id="{bf44cf0a-6eab-48bb-bb6c-a7ceca0b3221}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM FTP
+VAR
+ 		RisingEdge              : R_TRIG;
+        startstop               : BOOL;
+
+        state                   : BYTE;
+
+        FB_FTP_Open1            : FB_FTP_Open;
+        FB_FTP_FileList1                : FB_FTP_FileList;
+        FB_FTP_Close1           : FB_FTP_Close;
+
+        busy                    : BOOL;
+        err                     : BOOL;
+        errid                   : UDINT;
+
+        handle                  : T_HFTP;
+        
+        FileList                        : ARRAY [0..MAX_FILELIST_ITEMS] OF STRING;
+        Items                   : UDINT;       
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//https://download.beckhoff.com/download/document/automation/twincat3/TF6300_TC3_FTP_CLIENT_EN.pdf
+
+//ftp://<CX1000 IP Address>
+
+//testing
+RisingEdge(CLK:= startstop);
+IF RisingEdge.Q THEN
+        state := 1;
+END_IF
+
+CASE state OF
+        0:
+                ;
+
+        1:
+                FB_FTP_Open1(
+                        sNetID:= '5.0.252.142.1.1',
+                        sHost:= '172.16.9.223',
+                        nPort:= 21,
+                        sUsername:= 'TestUser',
+                        sPassword:= 'TestPwd123',
+                        bExecute:= TRUE,
+                        tTimeout:= T#15s,
+                        bBusy=> busy,
+                        bError=> err,
+                        nErrId=> errid,
+                        hFTP=> handle);
+
+                IF NOT busy AND NOT err THEN
+                        FB_FTP_Open1(bExecute:= FALSE);
+                        state := 2;
+                END_IF
+
+        2:
+                FB_FTP_FileList1(
+                        sNetID:= '5.0.252.142.1.1',
+                        hFTP:= handle,
+                        sMask:= '*.txt',
+                        nIndex:= 0,
+                        pList:= ADR(FileList),
+                        cbList:= SIZEOF(FileList),
+                        bExecute:= TRUE,
+                        tTimeout:= T#15s,
+                        bBusy=> busy,
+                        bError=> err,
+                        nErrID=> errid,
+                        nItems=> Items);
+
+                IF NOT busy AND NOT err THEN
+                        FB_FTP_FileList1(bExecute:= FALSE);
+                        state := 3;
+                END_IF
+
+        3:
+                FB_FTP_Close1(
+                        sNetID:= '5.0.252.142.1.1',
+                        hFTP:= handle,
+                        bExecute:= TRUE,
+                        tTimeout:= T#15s,
+                        bBusy => busy,
+                        bError => err,
+                        nErrId => errid);
+
+                IF NOT busy AND NOT err THEN
+                        FB_FTP_Close1(bExecute:= FALSE);
+                        state := 0;
+                END_IF
+
+END_CASE        
+ 
+]]></ST>
+    </Implementation>
+    <LineIds Name="FTP">
+      <LineId Id="5" Count="0" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="6" Count="0" />
+      <LineId Id="116" Count="0" />
+      <LineId Id="152" Count="63" />
+      <LineId Id="118" Count="0" />
+      <LineId Id="117" Count="0" />
+      <LineId Id="11" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

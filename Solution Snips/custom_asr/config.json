@@ -1,0 +1,304 @@
+{
+    "entityNameToFilename": {
+        "Magneet_Zuignap": "e_1.snips", 
+        "Algemeen": "e_2.snips", 
+        "Scan": "e_0.snips", 
+        "Object": "e_3.snips", 
+        "getal": "e_5.snips", 
+        "Lijmen_Frezen_tekenen": "e_4.snips", 
+        "Difference": "e_6.snips"
+    }, 
+    "intentNameToDisambigs": {
+        "172d85ac-69a7-4fae-9ec9-0c10683ba52e": {
+            "start": "`INTENT`172d85ac-69a7-4fae-9ec9-0c10683ba52e`START", 
+            "end": "`INTENT`172d85ac-69a7-4fae-9ec9-0c10683ba52e`END"
+        }, 
+        "GeneraalAlfa:test": {
+            "start": "`INTENT`af20e5e2-c493-42d2-91fe-215ae4fffb00`START", 
+            "end": "`INTENT`af20e5e2-c493-42d2-91fe-215ae4fffb00`END"
+        }
+    }, 
+    "injectionsEngine": {
+        "version": 2
+    }, 
+    "language": "en", 
+    "decoderConfig": {
+        "useFinalProbs": true, 
+        "latticeBeamSize": 4.0, 
+        "mbrConfig": {
+            "confidenceAdditionnalExponent": 1.0, 
+            "unkProba": 0.5, 
+            "unkThreshold": 0.3
+        }, 
+        "maxActive": 2500, 
+        "minActive": 200, 
+        "acousticScale": 0.83, 
+        "beamSize": 12.0
+    }, 
+    "cacheSizeDynamic": 268435456, 
+    "asrModel": {
+        "version": "0.1.0"
+    }, 
+    "asrLmAdaptation": {
+        "version": "0.19.12.1"
+    }, 
+    "endpointingRules": {
+        "rule3": {
+            "maxRelativeCost": 8.0, 
+            "minTrailingSilence": 1.0, 
+            "minUtteranceLength": 0.0, 
+            "mustContainNonsilence": true
+        }, 
+        "rule2": {
+            "maxRelativeCost": 5.5, 
+            "minTrailingSilence": 0.7, 
+            "minUtteranceLength": 0.0, 
+            "mustContainNonsilence": true
+        }, 
+        "rule1": {
+            "maxRelativeCost": 10000000000.0, 
+            "minTrailingSilence": 4.0, 
+            "minUtteranceLength": 0.0, 
+            "mustContainNonsilence": false
+        }, 
+        "rule5": {
+            "maxRelativeCost": 10000000000.0, 
+            "minTrailingSilence": 0.0, 
+            "minUtteranceLength": 10.0, 
+            "mustContainNonsilence": false
+        }, 
+        "rule4": {
+            "maxRelativeCost": 2.5, 
+            "minTrailingSilence": 0.5, 
+            "minUtteranceLength": 0.0, 
+            "mustContainNonsilence": true
+        }
+    }, 
+    "postprocessors": [
+        {
+            "Regex": {
+                "pattern": "`INTENT`172d85ac-69a7-4fae-9ec9-0c10683ba52e`START (.*?) `INTENT`172d85ac-69a7-4fae-9ec9-0c10683ba52e`END", 
+                "flags": "i", 
+                "replacement": "$1"
+            }
+        }, 
+        {
+            "Regex": {
+                "pattern": "`INTENT`172d85ac-69a7-4fae-9ec9-0c10683ba52e`START ", 
+                "flags": "i", 
+                "replacement": ""
+            }
+        }, 
+        {
+            "Regex": {
+                "pattern": "`INTENT`af20e5e2-c493-42d2-91fe-215ae4fffb00`START (.*?) `INTENT`af20e5e2-c493-42d2-91fe-215ae4fffb00`END", 
+                "flags": "i", 
+                "replacement": "$1"
+            }
+        }, 
+        {
+            "Regex": {
+                "pattern": "`INTENT`af20e5e2-c493-42d2-91fe-215ae4fffb00`START ", 
+                "flags": "i", 
+                "replacement": ""
+            }
+        }, 
+        {
+            "Regex": {
+                "pattern": "`ENTITY`154689e0-edee-4c68-8e6b-6057cae1e397`START (.*?) `ENTITY`154689e0-edee-4c68-8e6b-6057cae1e397`END", 
+                "flags": "i", 
+                "replacement": "$1"
+            }
+        }, 
+        {
+            "Regex": {
+                "pattern": "`ENTITY`154689e0-edee-4c68-8e6b-6057cae1e397`START ", 
+                "flags": "i", 
+                "replacement": ""
+            }
+        }, 
+        {
+            "Regex": {
+                "pattern": "`ENTITY`68f8bd61-f121-4a8c-b7b0-889ec1b20ca2`START (.*?) `ENTITY`68f8bd61-f121-4a8c-b7b0-889ec1b20ca2`END", 
+                "flags": "i", 
+                "replacement": "$1"
+            }
+        }, 
+        {
+            "Regex": {
+                "pattern": "`ENTITY`68f8bd61-f121-4a8c-b7b0-889ec1b20ca2`START ", 
+                "flags": "i", 
+                "replacement": ""
+            }
+        }, 
+        {
+            "Regex": {
+                "pattern": "`ENTITY`d45ee677-d187-47bb-95f9-97d97e4753fb`START (.*?) `ENTITY`d45ee677-d187-47bb-95f9-97d97e4753fb`END", 
+                "flags": "i", 
+                "replacement": "$1"
+            }
+        }, 
+        {
+            "Regex": {
+                "pattern": "`ENTITY`d45ee677-d187-47bb-95f9-97d97e4753fb`START ", 
+                "flags": "i", 
+                "replacement": ""
+            }
+        }, 
+        {
+            "Regex": {
+                "pattern": "`ENTITY`b22ced40-02e6-44eb-a940-e1fa6b9c8737`START (.*?) `ENTITY`b22ced40-02e6-44eb-a940-e1fa6b9c8737`END", 
+                "flags": "i", 
+                "replacement": "$1"
+            }
+        }, 
+        {
+            "Regex": {
+                "pattern": "`ENTITY`b22ced40-02e6-44eb-a940-e1fa6b9c8737`START ", 
+                "flags": "i", 
+                "replacement": ""
+            }
+        }, 
+        {
+            "Regex": {
+                "pattern": "`ENTITY`7e486407-33a9-4420-8a38-09bbee1f8892`START (.*?) `ENTITY`7e486407-33a9-4420-8a38-09bbee1f8892`END", 
+                "flags": "i", 
+                "replacement": "$1"
+            }
+        }, 
+        {
+            "Regex": {
+                "pattern": "`ENTITY`7e486407-33a9-4420-8a38-09bbee1f8892`START ", 
+                "flags": "i", 
+                "replacement": ""
+            }
+        }, 
+        {
+            "Regex": {
+                "pattern": "`ENTITY`20ba5d62-092c-4070-a12e-ac0cf02509a3`START (.*?) `ENTITY`20ba5d62-092c-4070-a12e-ac0cf02509a3`END", 
+                "flags": "i", 
+                "replacement": "$1"
+            }
+        }, 
+        {
+            "Regex": {
+                "pattern": "`ENTITY`20ba5d62-092c-4070-a12e-ac0cf02509a3`START ", 
+                "flags": "i", 
+                "replacement": ""
+            }
+        }, 
+        {
+            "Regex": {
+                "pattern": "`ENTITY`be0884d9-b9d8-438a-9cf5-e4138272bd30`START (.*?) `ENTITY`be0884d9-b9d8-438a-9cf5-e4138272bd30`END", 
+                "flags": "i", 
+                "replacement": "$1"
+            }
+        }, 
+        {
+            "Regex": {
+                "pattern": "`ENTITY`be0884d9-b9d8-438a-9cf5-e4138272bd30`START ", 
+                "flags": "i", 
+                "replacement": ""
+            }
+        }
+    ], 
+    "constantCacheSize": 20971520, 
+    "asrEngine": {
+        "version": "0.1.0"
+    }, 
+    "entitiesFstMap": [
+        [
+            79, 
+            "__root__"
+        ], 
+        [
+            82, 
+            "e_0.snips"
+        ], 
+        [
+            80, 
+            "e_1.snips"
+        ], 
+        [
+            81, 
+            "e_2.snips"
+        ], 
+        [
+            83, 
+            "e_3.snips"
+        ], 
+        [
+            85, 
+            "e_4.snips"
+        ], 
+        [
+            84, 
+            "e_5.snips"
+        ], 
+        [
+            86, 
+            "e_6.snips"
+        ]
+    ], 
+    "entityNameToDisambigs": {
+        "Magneet_Zuignap": {
+            "start": "`ENTITY`154689e0-edee-4c68-8e6b-6057cae1e397`START", 
+            "end": "`ENTITY`154689e0-edee-4c68-8e6b-6057cae1e397`END", 
+            "empty": [
+                "", 
+                4
+            ]
+        }, 
+        "Algemeen": {
+            "start": "`ENTITY`68f8bd61-f121-4a8c-b7b0-889ec1b20ca2`START", 
+            "end": "`ENTITY`68f8bd61-f121-4a8c-b7b0-889ec1b20ca2`END", 
+            "empty": [
+                "", 
+                4
+            ]
+        }, 
+        "Scan": {
+            "start": "`ENTITY`d45ee677-d187-47bb-95f9-97d97e4753fb`START", 
+            "end": "`ENTITY`d45ee677-d187-47bb-95f9-97d97e4753fb`END", 
+            "empty": [
+                "", 
+                4
+            ]
+        }, 
+        "Object": {
+            "start": "`ENTITY`b22ced40-02e6-44eb-a940-e1fa6b9c8737`START", 
+            "end": "`ENTITY`b22ced40-02e6-44eb-a940-e1fa6b9c8737`END", 
+            "empty": [
+                "", 
+                4
+            ]
+        }, 
+        "getal": {
+            "start": "`ENTITY`7e486407-33a9-4420-8a38-09bbee1f8892`START", 
+            "end": "`ENTITY`7e486407-33a9-4420-8a38-09bbee1f8892`END", 
+            "empty": [
+                "", 
+                4
+            ]
+        }, 
+        "Lijmen_Frezen_tekenen": {
+            "start": "`ENTITY`20ba5d62-092c-4070-a12e-ac0cf02509a3`START", 
+            "end": "`ENTITY`20ba5d62-092c-4070-a12e-ac0cf02509a3`END", 
+            "empty": [
+                "", 
+                4
+            ]
+        }, 
+        "Difference": {
+            "start": "`ENTITY`be0884d9-b9d8-438a-9cf5-e4138272bd30`START", 
+            "end": "`ENTITY`be0884d9-b9d8-438a-9cf5-e4138272bd30`END", 
+            "empty": [
+                "", 
+                4
+            ]
+        }
+    }, 
+    "inferenceEngine": {
+        "version": 2
+    }
+}

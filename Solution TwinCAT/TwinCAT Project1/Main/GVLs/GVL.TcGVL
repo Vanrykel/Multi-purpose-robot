@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <GVL Name="GVL" Id="{cc4b2dbc-0a04-4917-b69b-26eef17829c0}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	As_Xa : AXIS_REF;
+	As_Xb : AXIS_REF;
+	As_Y : AXIS_REF;
+	As_Z : AXIS_REF;
+	
+	ChannelInput AT %I* : NCTOPLC_NCICHANNEL_REF;
+	ChannelOutput AT %Q* : PLCTONC_NCICHANNEL_REF;
+	
+	StopALL : bool;
+	
+	bX1 AT%I* : BOOL;
+	bX2 AT%I* : BOOL;
+	bY1 AT%I* : BOOL;
+	bY2 AT%I* : BOOL;
+	
+	stReceivedData	: STRING(255);
+		
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

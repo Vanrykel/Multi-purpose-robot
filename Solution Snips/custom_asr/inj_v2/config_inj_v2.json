@@ -1,0 +1,51 @@
+{
+    "Magneet_Zuignap": {
+        "vanilla": "154689e0-edee-4c68-8e6b-6057cae1e397.vanilla", 
+        "ngram": true, 
+        "added": "154689e0-edee-4c68-8e6b-6057cae1e397.added", 
+        "pruningThresholds": [], 
+        "order": 3
+    }, 
+    "Algemeen": {
+        "vanilla": "68f8bd61-f121-4a8c-b7b0-889ec1b20ca2.vanilla", 
+        "ngram": true, 
+        "added": "68f8bd61-f121-4a8c-b7b0-889ec1b20ca2.added", 
+        "pruningThresholds": [], 
+        "order": 3
+    }, 
+    "Scan": {
+        "vanilla": "d45ee677-d187-47bb-95f9-97d97e4753fb.vanilla", 
+        "ngram": true, 
+        "added": "d45ee677-d187-47bb-95f9-97d97e4753fb.added", 
+        "pruningThresholds": [], 
+        "order": 3
+    }, 
+    "Object": {
+        "vanilla": "b22ced40-02e6-44eb-a940-e1fa6b9c8737.vanilla", 
+        "ngram": true, 
+        "added": "b22ced40-02e6-44eb-a940-e1fa6b9c8737.added", 
+        "pruningThresholds": [], 
+        "order": 3
+    }, 
+    "getal": {
+        "vanilla": "7e486407-33a9-4420-8a38-09bbee1f8892.vanilla", 
+        "ngram": true, 
+        "added": "7e486407-33a9-4420-8a38-09bbee1f8892.added", 
+        "pruningThresholds": [], 
+        "order": 3
+    }, 
+    "Lijmen_Frezen_tekenen": {
+        "vanilla": "20ba5d62-092c-4070-a12e-ac0cf02509a3.vanilla", 
+        "ngram": true, 
+        "added": "20ba5d62-092c-4070-a12e-ac0cf02509a3.added", 
+        "pruningThresholds": [], 
+        "order": 3
+    }, 
+    "Difference": {
+        "vanilla": "be0884d9-b9d8-438a-9cf5-e4138272bd30.vanilla", 
+        "ngram": true, 
+        "added": "be0884d9-b9d8-438a-9cf5-e4138272bd30.added", 
+        "pruningThresholds": [], 
+        "order": 3
+    }
+}

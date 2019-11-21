@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <GVL Name="COM" Id="{34a59a86-ea11-4ac6-84d9-4bbe8ae687ea}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	
+	bEnable		: BOOL := FALSE;
+	bCouple		: BOOL := FALSE;
+	bReset		: BOOL := FALSE;
+	bHome		: BOOL := FALSE;
+
+	bMoveX		: BOOL;
+	bMoveY		: BOOL;
+	bMoveZ		: BOOL;
+		
+	bSetZ		: BOOL;
+	
+	absX 		: INT := 0;
+	absY 		: INT := 0;
+	absZ 		: INT := 0;
+	
+	velX 		: INT := 200;	//0-400
+	velY 		: INT := 200;	//0-400
+	velZ 		: INT := 3;		//0-10
+	
+	PosX 		: LREAL;
+	PosY 		: LREAL;
+	PosZ 		: LREAL;
+	bValid		: BOOL;
+	
+	bHomeDone	: BOOL;
+	bHomeBusy	: BOOL;
+	bMoveDone	: BOOL;
+	bMoveXDone	: BOOL;
+	bMoveYDone	: BOOL;
+	bMoveZDone	: BOOL;
+	bMoveBusy	: BOOL;
+	
+	bError 		: BOOL;
+	
+	inUSe 		: BOOL;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

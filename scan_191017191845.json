@@ -1,0 +1,41 @@
+{
+	"datum": "2019-10-22",
+	"lijst": [
+	  {
+		"object": 1,
+		"position": "x44y160",
+		"angle": 45,
+		"difference": 1,
+		"delete": false
+	  },
+	  {
+		"object": 2,
+		"position": "x125y46",
+		"dimensions": "x478y11",
+		"angle": 0,
+		"difference": 2,
+		"delete": false
+	  },
+	  {
+		"object": 3,
+		"position": "x401y145",
+		"angle": 23,
+		"difference": 1,
+		"delete": true
+	  },
+	  {
+		"object": 4,
+		"position": "x88y16",
+		"angle": 112,
+		"difference": 1,
+		"delete": false
+	  },
+	  {
+		"object": 5,
+		"position": "x14y10",
+		"angle": 4,
+		"difference": 2,
+		"delete": false
+	  }
+	]
+}

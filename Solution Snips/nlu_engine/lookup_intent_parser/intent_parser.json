@@ -1,0 +1,145 @@
+{
+  "config": {
+    "ignore_stop_words": true,
+    "unit_name": "lookup_intent_parser"
+  },
+  "entity_scopes": [
+    {
+      "entity_scope": {
+        "builtin": [],
+        "custom": [
+          "Object",
+          "Scan",
+          "Lijmen_Frezen_tekenen",
+          "getal",
+          "Difference",
+          "Magneet_Zuignap",
+          "Algemeen"
+        ]
+      },
+      "intent_group": [
+        "GeneraalAlfa:test"
+      ]
+    }
+  ],
+  "intents_names": [
+    "GeneraalAlfa:test"
+  ],
+  "language_code": "en",
+  "map": {
+    "-1945519868": [
+      0,
+      [
+        3,
+        1,
+        2,
+        1,
+        2,
+        1,
+        2,
+        1
+      ]
+    ],
+    "-1535156131": [
+      0,
+      [
+        6
+      ]
+    ],
+    "-1151175269": [
+      0,
+      [
+        0,
+        1
+      ]
+    ],
+    "-996700048": [
+      0,
+      [
+        5
+      ]
+    ],
+    "-979916204": [
+      0,
+      [
+        4,
+        1,
+        1
+      ]
+    ],
+    "-837957619": [
+      0,
+      [
+        4,
+        1
+      ]
+    ],
+    "-723424227": [
+      0,
+      [
+        6
+      ]
+    ],
+    "-345453436": [
+      0,
+      [
+        4
+      ]
+    ],
+    "-339940474": [
+      0,
+      [
+        2,
+        1
+      ]
+    ],
+    "-19801778": [
+      0,
+      [
+        0
+      ]
+    ],
+    "103345950": [
+      0,
+      [
+        3,
+        1
+      ]
+    ],
+    "856373227": [
+      0,
+      [
+        2
+      ]
+    ],
+    "861546713": [
+      0,
+      [
+        5,
+        1
+      ]
+    ],
+    "1153007290": [
+      0,
+      [
+        6
+      ]
+    ],
+    "1156659682": [
+      0,
+      [
+        6
+      ]
+    ]
+  },
+  "slots_names": [
+    "Lijmen_Frezen_Tekenen",
+    "Number",
+    "Algameen_Boor",
+    "Magneet_Zuignap",
+    "Difference",
+    "Object",
+    "Scan"
+  ],
+  "stop_words_whitelist": {}
+}
