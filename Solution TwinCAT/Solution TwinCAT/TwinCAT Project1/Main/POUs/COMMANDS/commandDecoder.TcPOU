@@ -1,0 +1,689 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="commandDecoder" Id="{7eba7217-46bb-46ef-8690-bb184ce360f6}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM commandDecoder
+VAR
+	command 	: STRING(255);
+	Head_Loaded : STRING;
+	index 		: INT := 0;
+	
+	actualX 	: LREAL;
+	actualY 	: LREAL;
+	actualZ 	: Lreal;
+	
+	wait100ms : TON;
+	wait200ms : TON;
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[wait100ms(IN := COM.bEnable OR gvl.StopALL, pt := T#500MS);
+wait200ms(IN := COM.bEnable OR gvl.StopALL, pt := T#1S);
+
+IF ( NOT (com.sendCommand = '') ) THEN
+	command := F_ToLCase(com.sendCommand);
+	com.sendCommand := '';
+END_IF
+
+CASE index OF
+	0:	//commands
+		COM.bEnable := FALSE;
+		COM.bCouple := FALSE;
+		COM.bHome 	:= FALSE;
+		COM.inUSe 	:= FALSE;
+		
+		IF ( NOT (command = '') ) THEN
+			IF 		(command = 'error' OR com.IFerror) THEN		index := 999;
+			ELSIF 	(command = 'reset') THEN					index := 10;
+			ELSIF 	(command = 'stop') THEN						index := 20;
+			ELSIF 	(command = 'do homing') THEN				index := 100;
+			ELSIF 	(command = 'z to zero') THEN				index := 110;
+			ELSIF 	(command = 'go xyz') THEN					index := 200;
+			ELSIF 	(command = 'go xy') THEN					index := 205;
+			ELSIF 	(command = 'x-axis') THEN					index := 210;
+			ELSIF 	(command = 'y-axis') THEN					index := 220;
+			ELSIF 	(command = 'z-axis') THEN					index := 230;
+			ELSIF 	(command = 'exec gcode') THEN				index := 250;
+			ELSIF 	(command = 'execute trace') THEN			index := 260;
+			ELSIF 	(command = 'execute sort') THEN				index := 270;
+			ELSIF 	(command = 'execute drill') THEN			index := 280;
+			ELSIF 	(command = 'read position') THEN			index := 300;
+			ELSIF 	(command = 'up') THEN						index := 450;
+			ELSIF 	(command = 'down') THEN						index := 460;
+			ELSIF 	(command = 'show object') THEN				index := 600;
+			ELSE												index := 0;
+			END_IF;
+			command := '';
+		ELSE 
+			index := 0;
+		END_IF;
+		
+	10:  //reset
+		GVL.message_pub  := '{"text": "Resetting"}';
+		GVL.bSendMessage := TRUE;
+	
+		gcode.bReset := TRUE;
+		COM.bReset 	:= TRUE;
+		COM.bEnable := FALSE;
+		COM.bCouple := FALSE;
+		COM.bHome 	:= FALSE;
+		COM.inUSe 	:= FALSE;
+		COM.bMoveX 	:= FALSE;
+		COM.bMoveY 	:= FALSE;
+		COM.bMoveZ 	:= FALSE;
+		COM.bReset 	:= FALSE;	
+		gcode.bReset := FALSE;
+		
+		index 		:= 0;
+		
+	20:  //Stop
+		gvl.StopALL := TRUE;
+		
+		GVL.message_pub  := '{"text": "Stopping program"}';
+		GVL.bSendMessage := TRUE;
+		
+		IF wait100ms.q THEN
+			gvl.StopALL := FALSE;
+			index 		:= 0;
+		END_IF
+			
+	100: //Do homing
+		COM.bEnable := TRUE;
+		COM.bCouple := TRUE;
+		COM.bHome 	:= TRUE;
+		
+		GVL.message_pub  := '{"text": "Doing homing"}';
+		GVL.bSendMessage := TRUE;
+		
+		IF COM.bHomeBusy THEN
+			COM.inUSe 	:= TRUE;
+		ELSE
+			COM.inUSe 	:= FALSE;
+		END_IF
+		IF COM.bHomeDone THEN
+			COM.bEnable := FALSE;
+			COM.bCouple := FALSE;
+			COM.bHome 	:= FALSE;
+			COM.inUSe 	:= FALSE;
+			gvl.configHoming := TRUE;
+			index 	:= 0;
+		END_IF
+		
+	110: //set Z position to zero
+		COM.bSetZ 		:= TRUE;
+		
+		GVL.message_pub  := '{"text": "Z axis has been set to zero"}';
+		GVL.bSendMessage := TRUE;
+		
+		IF (COM.PosZ = 0 AND COM.bValid) THEN
+			COM.bSetZ 	:= FALSE;
+			gvl.configZaxis := TRUE;
+			index 		:= 0;
+		END_IF
+				
+	200: //Go to xyz Pos
+    	COM.absX := (COM.goX);
+		COM.absY := (COM.goY);
+		COM.absZ := (COM.goZ);
+		
+		IF gvl.configHoming THEN
+			COM.bEnable := TRUE;
+			COM.bCouple := TRUE;
+			
+			IF wait100ms.Q THEN 
+				COM.bMoveX 	:= TRUE;
+				COM.bMoveY 	:= TRUE;
+				COM.bMoveZ 	:= TRUE;
+			END_IF
+
+			IF COM.bMoveBusy THEN
+				COM.inUSe 	:= TRUE;
+			ELSE
+				COM.inUSe 	:= FALSE;
+			END_IF
+			
+			IF COM.bMoveDone THEN
+				COM.bEnable := FALSE;
+				COM.bCouple := FALSE;
+				COM.inUSe 	:= FALSE;
+				COM.bMoveX 	:= FALSE;
+				COM.bMoveY 	:= FALSE;
+				COM.bMoveZ 	:= FALSE;
+				index 	:= 0;
+			END_IF
+		ELSE
+			index 	:= 995;
+		END_IF
+		
+	205: //Go to xy Pos
+    	COM.absX := (COM.goX);
+		COM.absY := (COM.goY);
+		
+		IF gvl.configHoming THEN
+			COM.bEnable := TRUE;
+			COM.bCouple := TRUE;
+			
+			IF wait100ms.Q THEN 
+				COM.bMoveX 	:= TRUE;
+				COM.bMoveY 	:= TRUE;
+			END_IF
+			
+			IF COM.bMoveBusy THEN
+				COM.inUSe 	:= TRUE;
+			ELSE
+				COM.inUSe 	:= FALSE;
+			END_IF
+			
+			IF COM.bMoveXDone AND COM.bMoveYDone THEN
+				COM.bEnable := FALSE;
+				COM.bCouple := FALSE;
+				COM.inUSe 	:= FALSE;
+				COM.bMoveX 	:= FALSE;
+				COM.bMoveY 	:= FALSE;
+				COM.bMoveZ 	:= FALSE;
+				index 	:= 0;
+			END_IF
+		ELSE
+			index 	:= 995;
+		END_IF
+		
+	210: //Go X Pos
+	    COM.absX := (com.goX);
+		
+		IF gvl.configHoming THEN
+			COM.bEnable := TRUE;
+			COM.bCouple := TRUE;
+		
+			IF wait100ms.Q THEN 
+				COM.bMoveX 	:= TRUE;
+			END_IF
+			
+			IF COM.bMoveBusy THEN
+				COM.inUSe 	:= TRUE;
+			ELSE
+				COM.inUSe 	:= FALSE;
+			END_IF
+			
+			IF COM.bMoveXDone THEN
+				COM.bEnable := FALSE;
+				COM.bCouple := FALSE;
+				COM.inUSe 	:= FALSE;
+				COM.bMoveX 	:= FALSE;
+				index 	:= 0;
+			END_IF
+		ELSE
+			index 	:= 995;
+		END_IF
+		
+	220: //Go Y Pos
+		COM.absY := (com.goY);
+		
+		IF gvl.configHoming THEN
+			COM.bEnable := TRUE;
+			
+			IF wait100ms.Q THEN 
+				COM.bMoveY 	:= TRUE;
+			END_IF
+					
+			IF COM.bMoveBusy THEN
+				COM.inUSe 	:= TRUE;
+			ELSE
+				COM.inUSe 	:= FALSE;
+			END_IF
+			
+			IF COM.bMoveYDone THEN
+				COM.bEnable := FALSE;
+				COM.bCouple := FALSE;
+				COM.inUSe 	:= FALSE;
+				COM.bMoveY 	:= FALSE;
+				index 	:= 0;
+			END_IF
+		ELSE
+			index 	:= 995;
+		END_IF
+			
+	230: //Go Z Pos
+		COM.absZ := (com.goZ);
+		
+		IF gvl.configZaxis THEN
+			COM.bEnable := TRUE;
+			
+			IF wait100ms.Q THEN 
+				COM.bMoveZ 	:= TRUE;
+			END_IF
+			
+			IF COM.bMoveBusy THEN
+				COM.inUSe 	:= TRUE;
+			ELSE
+				COM.inUSe 	:= FALSE;
+			END_IF
+			
+			IF COM.bMoveZDone THEN
+				COM.bEnable := FALSE;
+				COM.bCouple := FALSE;
+				COM.inUSe 	:= FALSE;
+				COM.bMoveZ 	:= FALSE;
+				index 	:= 0;
+			END_IF
+		ELSE
+			index := 996;
+		END_IF
+		
+	250: //Execute Gcode
+		GVL.message_pub  := '{"text": "Executing code say reset after the program"}';
+		GVL.bSendMessage := TRUE;
+		
+		IF gvl.configHoming AND FALSE THEN
+			COM.bEnable := TRUE;
+			gcode.bBuildGroup := TRUE;
+			gcode.bLoad := TRUE;
+						
+			IF wait100ms.Q THEN 
+				gcode.bStart 	:= TRUE;
+				gcode.bLoad := FALSE;
+			ELSE 
+				gcode.bStart 	:= FALSE;
+			END_IF
+			
+			IF 	(command = 'reset' OR command = 'stop') THEN
+				gcode.bStop	:= TRUE;
+				gcode.bReset := TRUE;
+				gcode.bBuildGroup := FALSE;
+				COM.bEnable := FALSE;
+				
+			ELSIF(gcode.bStop)THEN
+					gcode.bStop	:= FALSE;
+					gcode.bReset := FALSE;
+					COM.bEnable := FALSE;
+					
+					index 		:= 0;
+			END_IF
+			
+		ELSE
+			index := 995;
+		END_IF
+			
+	260: //execute trace
+		GVL.message_pub  := '{"text": "Tracing will be executed"}';
+		GVL.bSendMessage := TRUE;
+		index 		:= 0;
+		
+	270: //execute sort
+		GVL.message_pub  := '{"text": "executing sort"}';
+		GVL.bSendMessage := TRUE;
+		index 		:= 0;
+		
+	280: //execute drill
+		GVL.message_pub  := '{"text": "execute drill"}';
+		GVL.bSendMessage := TRUE;
+		index 		:= 0;
+		
+	300: //Read XYZ
+		actualX 	:= COM.PosX;
+		actualY 	:= COM.Posy;
+		actualZ 	:= COM.PosZ;
+		IF COM.bValid THEN
+			index 	:= 0;
+		END_IF
+	
+	450: //Up
+		COM.relZ := (-com.goZ);
+		COM.bEnable := TRUE;
+		
+		IF wait100ms.Q THEN 
+			COM.bRelZ 	:= TRUE;
+		END_IF
+		
+		IF COM.bMoveBusy THEN
+			COM.inUSe 	:= TRUE;
+		ELSE
+			COM.inUSe 	:= FALSE;
+		END_IF
+		
+		IF COM.bMoveZRelDone THEN
+			COM.bEnable := FALSE;
+			COM.bCouple := FALSE;
+			COM.inUSe 	:= FALSE;
+			COM.brelZ 	:= FALSE;
+			index 	:= 0;
+		END_IF	
+	
+	460: //Down
+		COM.relZ := (com.goZ);
+		COM.bEnable := TRUE;
+		
+		IF wait100ms.Q THEN 
+			COM.bRelZ 	:= TRUE;
+		END_IF
+		
+		IF COM.bMoveBusy THEN
+			COM.inUSe 	:= TRUE;
+		ELSE
+			COM.inUSe 	:= FALSE;
+		END_IF
+		
+		IF COM.bMoveZRelDone THEN
+			COM.bEnable := FALSE;
+			COM.bCouple := FALSE;
+			COM.inUSe 	:= FALSE;
+			COM.brelZ 	:= FALSE;
+			index 	:= 0;
+		END_IF
+			
+	600: //Show object
+		com.objectNum := com.object1;
+		com.readfile  := TRUE;
+
+		
+		IF gvl.configHoming THEN
+			COM.bEnable := TRUE;
+			COM.bCouple := TRUE;
+			
+			IF wait100ms.Q THEN 
+				COM.absX := LREAL_TO_INT(COM.objectx);
+				COM.absY := LREAL_TO_INT(COM.objecty);
+				com.objectread := TRUE;
+			END_IF
+			
+			IF wait200ms.Q THEN 
+				COM.bMoveX 	:= TRUE;
+				COM.bMoveY 	:= TRUE;
+				com.objectread := FALSE;
+			END_IF
+			
+			IF COM.bMoveBusy THEN
+				COM.inUSe 	:= TRUE;
+			ELSE
+				COM.inUSe 	:= FALSE;
+			END_IF
+			
+			IF COM.bMoveXDone AND COM.bMoveYDone THEN
+				COM.bEnable := FALSE;
+				COM.bCouple := FALSE;
+				COM.inUSe 	:= FALSE;
+				COM.bMoveX 	:= FALSE;
+				COM.bMoveY 	:= FALSE;
+				COM.bMoveZ 	:= FALSE;
+				index 	:= 0;
+			END_IF
+		ELSE
+			index 	:= 995;
+		END_IF
+	
+
+	996: //set z to zero before performing an action on the z axis
+		GVL.message_pub  := '{"text": "You have to do Z to zero first"}';
+		GVL.bSendMessage := TRUE;
+		index := 0;
+	999: //Error
+			COM.bEnable := FALSE;
+			gvl.StopALL := TRUE;
+			GVL.message_pub  := '{"text": "There has been an error use reset command"}';
+			GVL.bSendMessage := TRUE;
+			IF(command = 'reset')THEN
+				gvl.StopALL := FALSE;
+				index := 0;
+			END_IF
+
+	ELSE 
+		index := 0;
+END_CASE;
+]]></ST>
+    </Implementation>
+    <LineIds Name="commandDecoder">
+      <LineId Id="1063" Count="1" />
+      <LineId Id="1284" Count="0" />
+      <LineId Id="751" Count="0" />
+      <LineId Id="755" Count="0" />
+      <LineId Id="752" Count="1" />
+      <LineId Id="699" Count="0" />
+      <LineId Id="396" Count="1" />
+      <LineId Id="419" Count="0" />
+      <LineId Id="718" Count="1" />
+      <LineId Id="717" Count="0" />
+      <LineId Id="428" Count="0" />
+      <LineId Id="1066" Count="0" />
+      <LineId Id="1033" Count="0" />
+      <LineId Id="1039" Count="0" />
+      <LineId Id="783" Count="0" />
+      <LineId Id="407" Count="0" />
+      <LineId Id="465" Count="0" />
+      <LineId Id="483" Count="0" />
+      <LineId Id="918" Count="0" />
+      <LineId Id="486" Count="0" />
+      <LineId Id="489" Count="0" />
+      <LineId Id="612" Count="0" />
+      <LineId Id="618" Count="0" />
+      <LineId Id="770" Count="0" />
+      <LineId Id="773" Count="0" />
+      <LineId Id="781" Count="0" />
+      <LineId Id="615" Count="0" />
+      <LineId Id="828" Count="0" />
+      <LineId Id="831" Count="0" />
+      <LineId Id="903" Count="0" />
+      <LineId Id="413" Count="0" />
+      <LineId Id="398" Count="0" />
+      <LineId Id="1067" Count="2" />
+      <LineId Id="628" Count="0" />
+      <LineId Id="1065" Count="0" />
+      <LineId Id="417" Count="0" />
+      <LineId Id="1157" Count="0" />
+      <LineId Id="1159" Count="0" />
+      <LineId Id="1158" Count="0" />
+      <LineId Id="1199" Count="0" />
+      <LineId Id="622" Count="0" />
+      <LineId Id="725" Count="1" />
+      <LineId Id="724" Count="0" />
+      <LineId Id="722" Count="0" />
+      <LineId Id="732" Count="1" />
+      <LineId Id="730" Count="0" />
+      <LineId Id="1010" Count="0" />
+      <LineId Id="1198" Count="0" />
+      <LineId Id="1201" Count="0" />
+      <LineId Id="641" Count="0" />
+      <LineId Id="1044" Count="0" />
+      <LineId Id="627" Count="0" />
+      <LineId Id="1043" Count="0" />
+      <LineId Id="1137" Count="0" />
+      <LineId Id="1140" Count="0" />
+      <LineId Id="1148" Count="0" />
+      <LineId Id="1139" Count="0" />
+      <LineId Id="1045" Count="1" />
+      <LineId Id="1048" Count="0" />
+      <LineId Id="1047" Count="0" />
+      <LineId Id="1042" Count="0" />
+      <LineId Id="399" Count="0" />
+      <LineId Id="421" Count="1" />
+      <LineId Id="430" Count="0" />
+      <LineId Id="1290" Count="0" />
+      <LineId Id="1287" Count="0" />
+      <LineId Id="1289" Count="0" />
+      <LineId Id="1288" Count="0" />
+      <LineId Id="434" Count="1" />
+      <LineId Id="665" Count="1" />
+      <LineId Id="436" Count="0" />
+      <LineId Id="438" Count="0" />
+      <LineId Id="450" Count="0" />
+      <LineId Id="442" Count="1" />
+      <LineId Id="451" Count="0" />
+      <LineId Id="950" Count="0" />
+      <LineId Id="441" Count="0" />
+      <LineId Id="440" Count="0" />
+      <LineId Id="463" Count="1" />
+      <LineId Id="449" Count="0" />
+      <LineId Id="1070" Count="0" />
+      <LineId Id="1153" Count="0" />
+      <LineId Id="1155" Count="0" />
+      <LineId Id="1154" Count="0" />
+      <LineId Id="478" Count="0" />
+      <LineId Id="496" Count="0" />
+      <LineId Id="951" Count="0" />
+      <LineId Id="498" Count="0" />
+      <LineId Id="497" Count="0" />
+      <LineId Id="476" Count="0" />
+      <LineId Id="431" Count="0" />
+      <LineId Id="401" Count="0" />
+      <LineId Id="452" Count="0" />
+      <LineId Id="461" Count="0" />
+      <LineId Id="1149" Count="0" />
+      <LineId Id="952" Count="0" />
+      <LineId Id="513" Count="1" />
+      <LineId Id="711" Count="0" />
+      <LineId Id="713" Count="0" />
+      <LineId Id="715" Count="1" />
+      <LineId Id="714" Count="0" />
+      <LineId Id="712" Count="0" />
+      <LineId Id="523" Count="0" />
+      <LineId Id="667" Count="3" />
+      <LineId Id="527" Count="4" />
+      <LineId Id="533" Count="0" />
+      <LineId Id="542" Count="1" />
+      <LineId Id="541" Count="0" />
+      <LineId Id="534" Count="0" />
+      <LineId Id="524" Count="0" />
+      <LineId Id="954" Count="1" />
+      <LineId Id="920" Count="0" />
+      <LineId Id="959" Count="0" />
+      <LineId Id="922" Count="2" />
+      <LineId Id="960" Count="0" />
+      <LineId Id="926" Count="6" />
+      <LineId Id="934" Count="15" />
+      <LineId Id="921" Count="0" />
+      <LineId Id="967" Count="0" />
+      <LineId Id="984" Count="0" />
+      <LineId Id="462" Count="0" />
+      <LineId Id="969" Count="0" />
+      <LineId Id="453" Count="0" />
+      <LineId Id="521" Count="0" />
+      <LineId Id="965" Count="1" />
+      <LineId Id="519" Count="1" />
+      <LineId Id="706" Count="0" />
+      <LineId Id="708" Count="0" />
+      <LineId Id="710" Count="0" />
+      <LineId Id="707" Count="0" />
+      <LineId Id="548" Count="0" />
+      <LineId Id="671" Count="3" />
+      <LineId Id="551" Count="6" />
+      <LineId Id="560" Count="0" />
+      <LineId Id="544" Count="0" />
+      <LineId Id="970" Count="1" />
+      <LineId Id="454" Count="0" />
+      <LineId Id="972" Count="0" />
+      <LineId Id="456" Count="0" />
+      <LineId Id="869" Count="0" />
+      <LineId Id="963" Count="1" />
+      <LineId Id="517" Count="0" />
+      <LineId Id="701" Count="0" />
+      <LineId Id="697" Count="0" />
+      <LineId Id="563" Count="0" />
+      <LineId Id="700" Count="0" />
+      <LineId Id="702" Count="0" />
+      <LineId Id="675" Count="3" />
+      <LineId Id="568" Count="5" />
+      <LineId Id="575" Count="0" />
+      <LineId Id="577" Count="0" />
+      <LineId Id="561" Count="0" />
+      <LineId Id="974" Count="1" />
+      <LineId Id="973" Count="0" />
+      <LineId Id="455" Count="0" />
+      <LineId Id="459" Count="0" />
+      <LineId Id="595" Count="0" />
+      <LineId Id="976" Count="1" />
+      <LineId Id="515" Count="0" />
+      <LineId Id="581" Count="0" />
+      <LineId Id="736" Count="1" />
+      <LineId Id="734" Count="1" />
+      <LineId Id="679" Count="3" />
+      <LineId Id="585" Count="5" />
+      <LineId Id="593" Count="1" />
+      <LineId Id="578" Count="0" />
+      <LineId Id="629" Count="0" />
+      <LineId Id="978" Count="2" />
+      <LineId Id="596" Count="0" />
+      <LineId Id="1141" Count="0" />
+      <LineId Id="1145" Count="0" />
+      <LineId Id="1174" Count="0" />
+      <LineId Id="1177" Count="1" />
+      <LineId Id="1191" Count="0" />
+      <LineId Id="1193" Count="0" />
+      <LineId Id="1182" Count="0" />
+      <LineId Id="1194" Count="1" />
+      <LineId Id="1211" Count="0" />
+      <LineId Id="1206" Count="1" />
+      <LineId Id="1183" Count="1" />
+      <LineId Id="1203" Count="1" />
+      <LineId Id="1208" Count="2" />
+      <LineId Id="1223" Count="0" />
+      <LineId Id="1217" Count="5" />
+      <LineId Id="1205" Count="0" />
+      <LineId Id="1202" Count="0" />
+      <LineId Id="1180" Count="1" />
+      <LineId Id="1179" Count="0" />
+      <LineId Id="1176" Count="0" />
+      <LineId Id="884" Count="0" />
+      <LineId Id="1142" Count="0" />
+      <LineId Id="1144" Count="0" />
+      <LineId Id="885" Count="0" />
+      <LineId Id="1152" Count="0" />
+      <LineId Id="999" Count="0" />
+      <LineId Id="1143" Count="0" />
+      <LineId Id="1146" Count="0" />
+      <LineId Id="1000" Count="0" />
+      <LineId Id="1151" Count="0" />
+      <LineId Id="1001" Count="0" />
+      <LineId Id="1003" Count="0" />
+      <LineId Id="1150" Count="0" />
+      <LineId Id="1002" Count="0" />
+      <LineId Id="886" Count="0" />
+      <LineId Id="597" Count="0" />
+      <LineId Id="604" Count="1" />
+      <LineId Id="601" Count="0" />
+      <LineId Id="608" Count="2" />
+      <LineId Id="1012" Count="0" />
+      <LineId Id="1050" Count="0" />
+      <LineId Id="1100" Count="0" />
+      <LineId Id="1077" Count="0" />
+      <LineId Id="1080" Count="17" />
+      <LineId Id="1056" Count="0" />
+      <LineId Id="1051" Count="0" />
+      <LineId Id="1102" Count="18" />
+      <LineId Id="1075" Count="0" />
+      <LineId Id="1053" Count="0" />
+      <LineId Id="1015" Count="0" />
+      <LineId Id="1268" Count="0" />
+      <LineId Id="1274" Count="0" />
+      <LineId Id="1239" Count="0" />
+      <LineId Id="1269" Count="0" />
+      <LineId Id="1240" Count="4" />
+      <LineId Id="1276" Count="1" />
+      <LineId Id="1275" Count="0" />
+      <LineId Id="1247" Count="0" />
+      <LineId Id="1282" Count="0" />
+      <LineId Id="1278" Count="0" />
+      <LineId Id="1280" Count="1" />
+      <LineId Id="1279" Count="0" />
+      <LineId Id="1248" Count="0" />
+      <LineId Id="1285" Count="0" />
+      <LineId Id="1249" Count="16" />
+      <LineId Id="1026" Count="1" />
+      <LineId Id="995" Count="0" />
+      <LineId Id="982" Count="0" />
+      <LineId Id="1121" Count="0" />
+      <LineId Id="1272" Count="0" />
+      <LineId Id="1122" Count="0" />
+      <LineId Id="447" Count="0" />
+      <LineId Id="503" Count="0" />
+      <LineId Id="915" Count="0" />
+      <LineId Id="1271" Count="0" />
+      <LineId Id="1273" Count="0" />
+      <LineId Id="507" Count="0" />
+      <LineId Id="916" Count="0" />
+      <LineId Id="508" Count="1" />
+      <LineId Id="448" Count="0" />
+      <LineId Id="445" Count="0" />
+      <LineId Id="406" Count="0" />
+      <LineId Id="391" Count="0" />
+      <LineId Id="390" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

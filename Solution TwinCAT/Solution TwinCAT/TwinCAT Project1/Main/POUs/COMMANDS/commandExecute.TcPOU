@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="commandExecute" Id="{4ff840c8-9717-45e8-bdfc-1a7c01fc0485}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM commandExecute
+VAR
+	MCPower_Xa, MCPower_Xb, MCPower_Y, 	MCPower_Z 	: MC_Power;
+	MCResetXa, MCResetXb, MCResetY, MCResetZ		: MC_Reset;
+
+	fb_MCGearIn										: MC_GearIn;
+	fb_MCGearOut									: MC_GearOut;
+
+	fb_MCHOME_X, fb_MCHOME_Y						: MC_Home;
+	fb_MoveAbs_X, fb_MoveAbs_Y, fb_MoveAbs_Z 		: MC_MoveAbsolute;
+	fb_MoveRel_Z 									: MC_MoveRelative;
+	fb_ReadX, fb_ReadY, fb_readZ 					: MC_ReadActualPosition;
+
+	fb_SetZToZero 									: MC_SetPosition;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//Enable Axis
+	MCPower_Xa(
+		Axis	:= GVL.As_Xa, 
+		Enable	:= COM.bEnable, 
+		Enable_Positive:= COM.bEnable, 
+		Enable_Negative:= COM.bEnable, 
+		Override:= 100 );
+		
+	MCPower_Xb(
+		Axis	:= GVL.As_Xb, 
+		Enable	:= COM.bEnable, 
+		Enable_Positive:= COM.bEnable, 
+		Enable_Negative:= COM.bEnable, 
+		Override:= 100 );
+		
+	MCPower_Y(
+		Axis	:= GVL.As_Y, 
+		Enable	:= COM.bEnable, 
+		Enable_Positive:= COM.bEnable, 
+		Enable_Negative:= COM.bEnable, 
+		Override:= 100 );
+		
+	MCPower_Z(
+		Axis	:= GVL.As_Z, 
+		Enable	:= COM.bEnable, 
+		Enable_Positive:= COM.bEnable, 
+		Enable_Negative:= COM.bEnable, 
+		Override:= 100 );
+
+//Reset Axis
+	MCResetXa(
+		Axis	:= GVL.As_Xa, 
+		Execute	:= COM.bReset );
+	
+	MCResetXb(
+		Axis	:= GVL.As_Xb, 
+		Execute	:= COM.bReset );
+
+	MCResetY(
+		Axis	:= GVL.As_Y, 
+		Execute	:= COM.bReset );
+
+	MCResetZ(
+		Axis	:= GVL.As_Z, 
+		Execute	:= COM.bReset );
+	
+//Couple Axis
+	fb_MCGearIn(
+		Master	:= GVL.As_Xa, 
+		Slave	:= GVL.As_Xb, 
+		Execute := COM.bCouple, 
+		RatioNumerator:= 1, 
+		RatioDenominator:= 1 );
+		
+	fb_MCGearOut(
+		Slave	:= GVL.As_Xb,
+		Execute := NOT(COM.bCouple) );
+		
+//Homing
+	fb_MCHOME_X(
+		Axis     := GVL.As_Xa, 
+		Execute  := COM.bHome AND COM.bCouple, 
+		Position := 0, 
+		bCalibrationCam:= GVL.bX1 );
+	
+	fb_MCHOME_Y(
+		Axis	 := GVL.As_Y, 
+		Execute  := COM.bHome AND COM.bCouple, 
+		Position := 0, 
+		bCalibrationCam:= GVL.bY1 );
+		
+//Absolute movement
+	fb_MoveAbs_X(
+		Axis 	 := GVL.As_Xa,
+		Execute  := COM.bMoveX AND COM.bCouple,
+		Position := COM.absX,
+		Velocity := COM.velX);
+		
+	fb_MoveAbs_Y(
+		Axis 	 := GVL.As_Y,
+		Execute  := COM.bMoveY,
+		Position := COM.absY,
+		Velocity := COM.velY);		
+		
+	fb_MoveAbs_Z(
+		Axis 	 := GVL.As_Z,
+		Execute  := COM.bMoveZ,
+		Position := COM.absZ,
+		Velocity := COM.velZ);
+//Rel movement
+	fb_MoveRel_Z(
+		Axis 	 := GVL.As_Z,
+		Execute  := COM.bRelZ,
+		distance := COM.relZ,
+		Velocity := COM.velZ);			
+		
+//set Z postition to zero
+	fb_SetZToZero(
+		Axis := GVL.As_Z, 
+		Execute := COM.bSetZ,
+		Position := 0, 
+		Mode := FALSE);
+
+//read actual position
+	fb_ReadX(Enable := TRUE, Axis := GVL.As_Xa, Position => COM.PosX);
+	fb_ReadY(Enable := TRUE, Axis := GVL.As_Y, Position => COM.PosY);
+	fb_ReadZ(Enable := TRUE, Axis := GVL.As_Z, Position => COM.PosZ);
+	COM.bValid := fb_ReadX.Valid AND fb_ReadY.Valid AND fb_ReadZ.Valid;
+	
+//done = busy
+	COM.bHomeBusy	:= fb_MCHOME_X.Busy OR fb_MCHOME_Y.Busy;
+	COM.bMoveBusy	:= fb_MoveAbs_X.Busy OR fb_MoveAbs_Y.Busy OR fb_MoveAbs_Z.Busy;		
+	
+	COM.bHomeDone	:= fb_MCHOME_X.Done AND fb_MCHOME_Y.Done;
+	COM.bMoveDone	:= fb_MoveAbs_X.Done AND fb_MoveAbs_Y.Done AND fb_MoveAbs_Z.Done;
+	
+	COM.bMoveXDone	:= fb_MoveAbs_X.Done;
+	COM.bMoveYDone	:= fb_MoveAbs_Y.Done;
+	COM.bMoveZDone	:= fb_MoveAbs_Z.Done;
+	COM.bMoveZRelDone	:= fb_MoveRel_Z.Done;]]></ST>
+    </Implementation>
+    <LineIds Name="commandExecute">
+      <LineId Id="71" Count="0" />
+      <LineId Id="74" Count="25" />
+      <LineId Id="73" Count="0" />
+      <LineId Id="72" Count="0" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="56" Count="13" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="70" Count="0" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="47" Count="0" />
+      <LineId Id="39" Count="7" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="100" Count="1" />
+      <LineId Id="112" Count="9" />
+      <LineId Id="111" Count="0" />
+      <LineId Id="123" Count="1" />
+      <LineId Id="126" Count="0" />
+      <LineId Id="151" Count="0" />
+      <LineId Id="127" Count="1" />
+      <LineId Id="125" Count="0" />
+      <LineId Id="129" Count="1" />
+      <LineId Id="152" Count="0" />
+      <LineId Id="131" Count="1" />
+      <LineId Id="103" Count="1" />
+      <LineId Id="148" Count="0" />
+      <LineId Id="153" Count="0" />
+      <LineId Id="149" Count="1" />
+      <LineId Id="146" Count="0" />
+      <LineId Id="208" Count="0" />
+      <LineId Id="210" Count="3" />
+      <LineId Id="209" Count="0" />
+      <LineId Id="147" Count="0" />
+      <LineId Id="138" Count="1" />
+      <LineId Id="154" Count="0" />
+      <LineId Id="140" Count="1" />
+      <LineId Id="105" Count="0" />
+      <LineId Id="158" Count="0" />
+      <LineId Id="157" Count="0" />
+      <LineId Id="159" Count="0" />
+      <LineId Id="161" Count="1" />
+      <LineId Id="106" Count="0" />
+      <LineId Id="171" Count="0" />
+      <LineId Id="107" Count="0" />
+      <LineId Id="156" Count="0" />
+      <LineId Id="164" Count="0" />
+      <LineId Id="186" Count="0" />
+      <LineId Id="165" Count="0" />
+      <LineId Id="109" Count="0" />
+      <LineId Id="187" Count="1" />
+      <LineId Id="192" Count="1" />
+      <LineId Id="215" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

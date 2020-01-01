@@ -1,58 +1,110 @@
 {
-  "id" : "proj_zKnrldeMpBr",
-  "name" : "EP_Test",
+  "id" : "proj_0dPl7mQ275V",
+  "name" : "Project EP 2",
   "intents" : [ {
-    "id" : "GeneraalAlfa:test",
+    "id" : "GeneraalAlfa:PLC",
     "type" : "registry",
-    "version" : "0.5.0",
+    "version" : "0.4.0",
     "language" : "en",
     "slots" : [ {
+      "name" : "Show",
+      "id" : "lgbC3NUla",
+      "entityId" : "entity_qPaKv6XwZdy",
+      "missingQuestion" : "",
+      "required" : false
+    }, {
       "name" : "Number",
-      "id" : "aNk4-sNRG",
+      "id" : "lDS3EYHz4",
       "entityId" : "entity_QWNXlyed3qv",
       "missingQuestion" : "",
       "required" : false
     }, {
-      "name" : "Object",
-      "id" : "19JGuTKXM",
-      "entityId" : "entity_r2mrxKoqe5z",
+      "name" : "Combine",
+      "id" : "8QG7rh_u_",
+      "entityId" : "entity_rzyVZArBp9w",
       "missingQuestion" : "",
       "required" : false
     }, {
+      "name" : "Turn",
+      "id" : "kCVrOTEC5",
+      "entityId" : "entity_VpzPxBloa6N",
+      "missingQuestion" : "",
+      "required" : false
+    }, {
+      "name" : "Sort",
+      "id" : "LBZaw8wDI",
+      "entityId" : "entity_MK9vv1p7rXg",
+      "missingQuestion" : "",
+      "required" : false
+    }, {
+      "name" : "Drill",
+      "id" : "qjxTitd-u",
+      "entityId" : "entity_wX6ykylb3ll",
+      "missingQuestion" : "",
+      "required" : false
+    }, {
+      "name" : "Trace",
+      "id" : "dQLfr7hVT",
+      "entityId" : "entity_kBDpkAgY1rv",
+      "missingQuestion" : "",
+      "required" : false
+    }, {
+      "name" : "Delete",
+      "id" : "IN-CpInmv",
+      "entityId" : "entity_vXy2qmBga4m",
+      "missingQuestion" : "",
+      "required" : false
+    }, {
+      "name" : "Extra",
+      "id" : "gsYnbJJn0",
+      "entityId" : "entity_PeA3P4d10K8",
+      "missingQuestion" : "",
+      "required" : false
+    } ],
+    "name" : "PLC",
+    "enabledByDefault" : true
+  }, {
+    "id" : "GeneraalAlfa:Show_commands",
+    "type" : "registry",
+    "version" : "0.2.0",
+    "language" : "en",
+    "slots" : [ {
+      "name" : "Show_Commands",
+      "id" : "62XVmprvM",
+      "entityId" : "entity_NQbBON60gXM",
+      "missingQuestion" : "",
+      "required" : false
+    } ],
+    "name" : "Show_commands",
+    "enabledByDefault" : true
+  }, {
+    "id" : "GeneraalAlfa:Vision",
+    "type" : "registry",
+    "version" : "0.5.0",
+    "language" : "en",
+    "slots" : [ {
       "name" : "Scan",
-      "id" : "xg_3eq6Dx",
+      "id" : "XhpSGmaN0b",
       "entityId" : "entity_5WKwo8P32ow",
       "missingQuestion" : "",
       "required" : false
     }, {
-      "name" : "Difference",
-      "id" : "f_j1CzlPH",
-      "entityId" : "entity_gWlv4K7gxOK",
+      "name" : "G_code",
+      "id" : "Zmcxx-X1e",
+      "entityId" : "entity_Kx1kkxvD4kl",
       "missingQuestion" : "",
       "required" : false
     }, {
-      "name" : "Magneet_Zuignap",
-      "id" : "DEpoqYtIG",
-      "entityId" : "entity_2K1NabK1g3y",
-      "missingQuestion" : "",
-      "required" : false
-    }, {
-      "name" : "Lijmen_Frezen_Tekenen",
-      "id" : "tUnejPkDF",
-      "entityId" : "entity_vm4NAgXPabe",
-      "missingQuestion" : "",
-      "required" : false
-    }, {
-      "name" : "Algameen_Boor",
-      "id" : "JaHvomuej",
-      "entityId" : "entity_yyzeo8qepmb",
+      "name" : "Vision",
+      "id" : "gHTdQTWn2",
+      "entityId" : "entity_OKNyxArBMOZ",
       "missingQuestion" : "",
       "required" : false
     } ],
-    "name" : "test",
+    "name" : "Vision",
     "enabledByDefault" : true
   } ],
-  "createdAt" : "2019-10-23T14:54:17.134Z",
+  "createdAt" : "2019-11-20T15:26:04.395Z",
   "language" : "en",
   "version" : {
     "nluModel" : "0.20.1"

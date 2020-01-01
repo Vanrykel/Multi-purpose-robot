@@ -170,38 +170,66 @@
   "custom_entity_parser": "custom_entity_parser",
   "dataset_metadata": {
     "entities": {
-      "Algemeen": {
+      "Combine": {
         "automatically_extensible": false
       },
-      "Difference": {
+      "Delete": {
         "automatically_extensible": false
       },
-      "Lijmen_Frezen_tekenen": {
-        "automatically_extensible": false
-      },
-      "Magneet_Zuignap": {
-        "automatically_extensible": false
-      },
-      "Object": {
+      "Dril": {
         "automatically_extensible": false
       },
       "Scan": {
         "automatically_extensible": false
       },
+      "Show commands": {
+        "automatically_extensible": false
+      },
+      "Show object/difference": {
+        "automatically_extensible": false
+      },
+      "Sort": {
+        "automatically_extensible": false
+      },
+      "Trace": {
+        "automatically_extensible": false
+      },
+      "Turn": {
+        "automatically_extensible": false
+      },
+      "extra": {
+        "automatically_extensible": false
+      },
+      "g-code": {
+        "automatically_extensible": false
+      },
       "getal": {
+        "automatically_extensible": false
+      },
+      "vision commands": {
         "automatically_extensible": false
       }
     },
     "language_code": "en",
     "slot_name_mappings": {
-      "GeneraalAlfa:test": {
-        "Algameen_Boor": "Algemeen",
-        "Difference": "Difference",
-        "Lijmen_Frezen_Tekenen": "Lijmen_Frezen_tekenen",
-        "Magneet_Zuignap": "Magneet_Zuignap",
+      "GeneraalAlfa:PLC": {
+        "Combine": "Combine",
+        "Delete": "Delete",
+        "Drill": "Dril",
+        "Extra": "extra",
         "Number": "getal",
-        "Object": "Object",
-        "Scan": "Scan"
+        "Show": "Show object/difference",
+        "Sort": "Sort",
+        "Trace": "Trace",
+        "Turn": "Turn"
+      },
+      "GeneraalAlfa:Show_commands": {
+        "Show_Commands": "Show commands"
+      },
+      "GeneraalAlfa:Vision": {
+        "G_code": "g-code",
+        "Scan": "Scan",
+        "Vision": "vision commands"
       }
     }
   },

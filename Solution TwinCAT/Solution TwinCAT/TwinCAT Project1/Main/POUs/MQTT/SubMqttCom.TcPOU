@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="SubMqttCom" Id="{e497f071-9b91-4320-8bee-0f78a0b63133}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM SubMqttCom
+VAR
+	fbMqttClient : FB_IotMqttClient;
+	bSetParameter : BOOL := TRUE;
+	bConnect : BOOL := TRUE;
+	
+	(* received message *)
+	bSubscribed : BOOL;
+	sTopicSub : STRING(255) := 'hermes/intent/GeneraalAlfa:PLC';//GeneraalAlfa:machineState
+	{attribute 'TcEncoding':='UTF-8'}
+	sTopicRcv : STRING(255);
+	{attribute 'TcEncoding':='UTF-8'}
+	sPayloadRcv : STRING(2047);
+	sPayloadRcv_extra : STRING(2047);
+	fbMessageQueue : FB_IotMqttMessageQueue;
+	fbMessage : FB_IotMqttMessage;
+	
+	hrErrorOccurred : HRESULT; // contains the latest occurred error
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF bSetParameter THEN
+	bSetParameter := FALSE;
+	fbMqttClient.sHostName:= '192.168.1.205';
+	fbMqttClient.nHostPort:= 1883;
+	fbMqttClient.sTopicPrefix:= ''; 
+	fbMqttClient.ipMessageQueue := fbMessageQueue;
+END_IF
+
+fbMqttClient.Execute(bConnect);
+IF fbMqttClient.bError THEN
+	hrErrorOccurred := fbMqttClient.hrErrorCode;
+END_IF
+
+IF fbMessageQueue.nQueuedMessages > 0 THEN
+	IF fbMessageQueue.Dequeue(fbMessage:=fbMessage) THEN
+		fbMessage.GetTopic(pTopic:=ADR(sTopicRcv), nTopicSize:=SIZEOF(sTopicRcv) );
+		fbMessage.GetPayload(pPayload:=ADR(sPayloadRcv), nPayloadSize:=SIZEOF(sPayloadRcv), bSetNullTermination:=FALSE);
+	END_IF
+END_IF
+
+IF fbMqttClient.bConnected THEN
+	IF NOT bSubscribed THEN
+		bSubscribed := fbMqttClient.Subscribe(sTopic:=sTopicSub, eQoS:=TcIotMqttQos.AtMostOnceDelivery);
+		IF fbMqttClient.bError THEN
+			hrErrorOccurred := fbMqttClient.hrErrorCode;
+		END_IF
+	END_IF
+END_IF
+
+IF NOT( sPayloadRcv = '')THEN
+	sPayloadRcv_extra := sPayloadRcv;
+	GVL.message_sub := sPayloadRcv;
+	sPayloadRcv :='';
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="SubMqttCom">
+      <LineId Id="239" Count="1" />
+      <LineId Id="299" Count="0" />
+      <LineId Id="242" Count="0" />
+      <LineId Id="244" Count="0" />
+      <LineId Id="250" Count="4" />
+      <LineId Id="256" Count="13" />
+      <LineId Id="271" Count="8" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

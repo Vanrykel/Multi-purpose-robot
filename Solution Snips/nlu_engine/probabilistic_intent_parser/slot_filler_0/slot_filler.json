@@ -70,13 +70,15 @@
       {
         "args": {
           "entities": [
+            "Dril",
+            "Delete",
+            "Sort",
+            "Combine",
+            "Trace",
+            "Turn",
             "getal",
-            "Algemeen",
-            "Difference",
-            "Scan",
-            "Lijmen_Frezen_tekenen",
-            "Magneet_Zuignap",
-            "Object"
+            "extra",
+            "Show object/difference"
           ],
           "entity_filter": {
             "automatically_extensible": false
@@ -152,15 +154,17 @@
     "unit_name": "crf_slot_filler"
   },
   "crf_model_file": "model.crfsuite",
-  "intent": "GeneraalAlfa:test",
+  "intent": "GeneraalAlfa:PLC",
   "language_code": "en",
   "slot_name_mapping": {
-    "Algameen_Boor": "Algemeen",
-    "Difference": "Difference",
-    "Lijmen_Frezen_Tekenen": "Lijmen_Frezen_tekenen",
-    "Magneet_Zuignap": "Magneet_Zuignap",
+    "Combine": "Combine",
+    "Delete": "Delete",
+    "Drill": "Dril",
+    "Extra": "extra",
     "Number": "getal",
-    "Object": "Object",
-    "Scan": "Scan"
+    "Show": "Show object/difference",
+    "Sort": "Sort",
+    "Trace": "Trace",
+    "Turn": "Turn"
   }
 }

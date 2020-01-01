@@ -1,0 +1,145 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="fileio2" Id="{23de3f93-cac6-45ef-a16f-4c7cef95c89c}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM fileio2
+VAR
+	//PATH
+	pathn : STRING := 'C:\0 0json\scan.json';
+	
+	//logindet
+	protocol 	: STRING := 'FTP';
+	Encryption 	: STRING := 'no encryption';
+	HostName 	: STRING := 'ftp.pxl-ea-ict.be';
+	PortNumber 	: UDINT := 21;
+	Username 	: STRING := '11702361@pxl-ea-ict.be';
+	Password 	: STRING := '2n4jUNWw1KlH';
+	Directory 	: STRING := 'EPFILES';
+	
+	 RisingEdge         : R_TRIG;
+     startstop         	: BOOL;
+     state         		: BYTE;
+     FB_FTP_Open1     	: FB_FTP_Open;
+     FB_FTP_FileDownload1 : FB_FTP_FileDownload;
+	 FB_FTP_FileList1     : FB_FTP_FileList;
+     FB_FTP_Close1     	: FB_FTP_Close;
+	 FB_FTP_Info1		: FB_FTP_Info;
+     busy         		: BOOL;
+     err            	: BOOL;
+     errid         		: UDINT;
+     handle         	: T_HFTP;
+     progress         	: UDINT;
+	 Items         		: UDINT;
+	 FileList         	: ARRAY [0..MAX_FILELIST_ITEMS] OF STRING;
+END_VAR
+	]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[RisingEdge(CLK:= startstop);
+
+CASE state OF
+     0:
+		IF RisingEdge.Q THEN
+		 	state := 1;
+			startstop := FALSE;
+		END_IF
+         ;
+     1:
+         FB_FTP_Open1(
+			 sNetID:= '500',
+             sHost:= 'FTP.pxl-ea-ict.be',
+             nPort:= 21,
+             sUsername:= '11702361@pxl-ea-ict.be',
+             sPassword:= '2n4jUNWw1KlH',
+             bExecute:= TRUE,
+             tTimeout:= T#5S,
+             bBusy=> busy,
+             bError=> err,
+             nErrId=> errid,
+             hFTP=> handle);
+         IF NOT busy AND NOT err THEN
+             FB_FTP_Open1(bExecute:= FALSE);
+             state := 2;
+         END_IF
+     2:
+         FB_FTP_FileList1(
+             sNetID:= ,
+             hFTP:= handle,
+             sMask:= '*.txt',
+               nIndex:= 0,
+             pList:= ADR(FileList),
+             cbList:= SIZEOF(FileList),
+             bExecute:= TRUE,
+             tTimeout:= T#15s,
+             bBusy=> busy,
+             bError=> err,
+             nErrID=> errid,
+             nItems=> Items);
+         IF NOT busy AND NOT err THEN
+             FB_FTP_FileList1(bExecute:= FALSE);
+             state := 3;
+         END_IF
+     3:
+         FB_FTP_Close1(
+             sNetID:= ,
+             hFTP:= handle,
+             bExecute:= TRUE,
+             tTimeout:= T#15s,
+             bBusy => busy,
+             bError => err,
+             nErrId => errid);
+         IF NOT busy AND NOT err THEN
+             FB_FTP_Close1(bExecute:= FALSE);
+             state := 0;
+          END_IF
+END_CASE
+
+
+
+
+
+
+
+
+(*rDo(CLK := bDO);
+
+CASE state OF
+	0:
+		IF rDo.Q THEN
+			state := 1;
+		END_IF
+		
+	1:
+		state:=2;
+		
+	ELSE 
+		state := 0;
+END_CASE*)]]></ST>
+    </Implementation>
+    <LineIds Name="fileio2">
+      <LineId Id="65" Count="0" />
+      <LineId Id="68" Count="2" />
+      <LineId Id="119" Count="1" />
+      <LineId Id="172" Count="0" />
+      <LineId Id="118" Count="0" />
+      <LineId Id="71" Count="2" />
+      <LineId Id="142" Count="0" />
+      <LineId Id="75" Count="13" />
+      <LineId Id="121" Count="16" />
+      <LineId Id="104" Count="2" />
+      <LineId Id="141" Count="0" />
+      <LineId Id="108" Count="9" />
+      <LineId Id="44" Count="8" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="26" Count="1" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="24" Count="1" />
+      <LineId Id="22" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

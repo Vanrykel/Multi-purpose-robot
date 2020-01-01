@@ -1,32 +1,56 @@
 {
   "parsers_metadata": [
     {
-      "entity_identifier": "Algemeen",
+      "entity_identifier": "Combine",
       "entity_parser": "parser_1"
     },
     {
-      "entity_identifier": "Difference",
+      "entity_identifier": "Delete",
       "entity_parser": "parser_2"
     },
     {
-      "entity_identifier": "Lijmen_Frezen_tekenen",
+      "entity_identifier": "Dril",
       "entity_parser": "parser_3"
     },
     {
-      "entity_identifier": "Magneet_Zuignap",
+      "entity_identifier": "Scan",
       "entity_parser": "parser_4"
     },
     {
-      "entity_identifier": "Object",
+      "entity_identifier": "Show commands",
       "entity_parser": "parser_5"
     },
     {
-      "entity_identifier": "Scan",
+      "entity_identifier": "Show object/difference",
       "entity_parser": "parser_6"
     },
     {
-      "entity_identifier": "getal",
+      "entity_identifier": "Sort",
       "entity_parser": "parser_7"
+    },
+    {
+      "entity_identifier": "Trace",
+      "entity_parser": "parser_8"
+    },
+    {
+      "entity_identifier": "Turn",
+      "entity_parser": "parser_9"
+    },
+    {
+      "entity_identifier": "extra",
+      "entity_parser": "parser_10"
+    },
+    {
+      "entity_identifier": "g-code",
+      "entity_parser": "parser_11"
+    },
+    {
+      "entity_identifier": "getal",
+      "entity_parser": "parser_12"
+    },
+    {
+      "entity_identifier": "vision commands",
+      "entity_parser": "parser_13"
     }
   ]
 }

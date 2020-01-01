@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="knoppen" Id="{6c143f2d-6165-4a19-8917-831738003274}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM knoppen
+VAR
+	bmagneet	    AT %Q* : BOOL;
+	bpomp1			AT %Q* : BOOL;
+	bpomp2			AT %Q* : BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <LineIds Name="knoppen">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

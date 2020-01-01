@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="MAIN_MQTT" Id="{0516418e-ec3e-438d-8aaa-4652e5401c82}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN_MQTT
+VAR
+	
+	arr : ARRAY [1..10] OF STRING(2047);
+	
+	(* JSON *)
+	fbJson 			: FB_JsonDomParser;
+	jsonDoc 		: SJsonValue;
+	jsonProp		: SJsonValue;
+	jsonValue		: SJsonValue;
+	bHasMember		: BOOL;
+	stReceivedData	: STRING(255);
+	stReceivedData_arr : ARRAY [1..10] OF STRING(255);
+	
+	(* Test *)
+	test			: STRING(255);
+	test_recv		: STRING(255);
+	
+	teller: INT := 0;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF NOT (GVL.flag_pub) THEN
+	PrgMqttCom();
+	SubMqttCom();
+END_IF
+
+//Pub to text_to_speech--------------------------------------------------------------------
+IF GVL.flag_pub AND GVL.bSendMessage THEN
+	//GVL.message_pub := '{"text": "This is a test"}';
+	PrgMqttCom();
+	GVL.message_pub := '';
+	GVL.bSendMessage := FALSE;
+END_IF
+
+SubMqttCom();
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN_MQTT">
+      <LineId Id="314" Count="2" />
+      <LineId Id="313" Count="0" />
+      <LineId Id="197" Count="0" />
+      <LineId Id="177" Count="0" />
+      <LineId Id="176" Count="0" />
+      <LineId Id="178" Count="0" />
+      <LineId Id="180" Count="0" />
+      <LineId Id="183" Count="0" />
+      <LineId Id="291" Count="0" />
+      <LineId Id="179" Count="0" />
+      <LineId Id="198" Count="0" />
+      <LineId Id="189" Count="0" />
+      <LineId Id="191" Count="0" />
+      <LineId Id="190" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

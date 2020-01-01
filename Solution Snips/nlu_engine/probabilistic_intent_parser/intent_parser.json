@@ -159,8 +159,16 @@
   },
   "slot_fillers": [
     {
-      "intent": "GeneraalAlfa:test",
+      "intent": "GeneraalAlfa:PLC",
       "slot_filler_name": "slot_filler_0"
+    },
+    {
+      "intent": "GeneraalAlfa:Show_commands",
+      "slot_filler_name": "slot_filler_1"
+    },
+    {
+      "intent": "GeneraalAlfa:Vision",
+      "slot_filler_name": "slot_filler_2"
     }
   ]
 }

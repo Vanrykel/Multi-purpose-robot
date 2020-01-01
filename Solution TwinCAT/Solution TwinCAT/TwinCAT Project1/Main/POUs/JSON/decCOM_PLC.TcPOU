@@ -1,0 +1,208 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="decCOM_PLC" Id="{d6d5fd47-9412-40ff-bdf4-d8dc64ecca61}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM decCOM_PLC
+VAR
+	 recString 			: STRING(2047);
+	 RisingEdge         : R_TRIG;
+	 bExecute			: BOOL;
+	 bReset				: BOOL;
+
+	fbJson 				: FB_JsonDomParser;
+                    	
+	jsonDoc 			: SJsonValue;
+	jsonDoc2 			: SJsonValue;
+	                	
+	jsonProp			: SJsonValue;
+	jsonProp2			: SJsonValue;           	
+
+	jsontempval			: SJsonValue;
+	
+	getInput			: STRING(2047);
+	getRawValue 		: STRING;
+	getValueStr 		: STRING;
+	getValue1			: STRING(2047);
+	
+	jsonGetulint		: ULINT;
+	jsongettype			: Tc3_JsonXml.EJsonType;
+	jsongetArraySize	: UDINT;
+	jsongetArray		: ARRAY[0..1000] OF SJsonValue;
+	jsongetArrayulint	: ULINT;
+	jsongetArrayudint	: UDINT;
+	
+	JSONTEMP			: STRING(2047);
+	
+	JSONVal1 			: STRING;
+	JSONVal2 			: STRING;
+	JSONVal3 			: STRING;
+	JSONVal4 			: STRING;
+	JSONVal5 			: STRING;
+	JSONVal6 			: STRING;
+	
+	cnt : UDINT;	
+	temp : string;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[RisingEdge(CLK:=bReset);
+IF RisingEdge.Q THEN
+	JSONVal1	:= '';
+	JSONVal2	:= '';
+	JSONVal3	:= '';
+    JSONVal4	:= '';
+    JSONVal5	:= '';
+    JSONVal6	:= '';
+	bReset 		:= FALSE;
+END_IF
+
+IF NOT(GVL.message_sub = '') THEN
+	recString := GVL.message_sub;
+	jsonDoc := fbJson.ParseDocument(recString);
+	
+	jsonProp := fbJson.FindMember(jsonDoc, 'slots');
+	cnt := 0;
+	
+	IF (jsonProp <> 0) THEN
+		jsongettype			:= fbJson.GetType(jsonProp);
+		jsongetArraySize	:= fbJson.GetArraySize(jsonProp);
+		FOR cnt := 0 TO jsongetArraySize-1 BY 1 DO
+			jsongetArrayudint		:= fbJson.GetArrayValueByIdx(jsonProp, cnt);
+			JSONTEMP				:= fbJson.GetJson( jsongetArrayudint );
+				jsonDoc2 			:= fbJson.ParseDocument(JSONTEMP);
+				jsonProp2 			:= fbJson.FindMember(jsonDoc2, 'value');
+					jsonProp2 		:= fbJson.FindMember(jsonProp2, 'value');
+						CASE cnt OF
+							0:	JSONVal1	:= fbJson.GetString(jsonProp2);
+							1:	JSONVal2	:= fbJson.GetString(jsonProp2);
+							2:	JSONVal3	:= fbJson.GetString(jsonProp2);
+							3:	JSONVal4	:= fbJson.GetString(jsonProp2);
+							4:	JSONVal5	:= fbJson.GetString(jsonProp2);
+							5:	JSONVal6	:= fbJson.GetString(jsonProp2);
+						END_CASE
+		END_FOR
+		
+		CASE cnt OF
+			1:
+				IF 		(JSONVal1 = 'Do homing') 						THEN							com.sendCommand := 'do homing';				
+				ELSIF 	(JSONVal1 = 'Execute trace') 					THEN							com.sendCommand := 'execute trace';			
+				ELSIF 	(JSONVal1 = 'Execute sort') 					THEN							com.sendCommand := 'execute sort';
+				ELSIF 	(JSONVal1 = 'Execute Drill') 					THEN							com.sendCommand := 'execute drill';
+				ELSIF 	(JSONVal1 = 'Stop') 							THEN							com.sendCommand := 'stop';	
+				ELSIF 	(JSONVal1 = 'z to zero') 						THEN							com.sendCommand := 'z to zero';
+				ELSIF 	(JSONVal1 = 'read position') 					THEN							com.sendCommand := 'read position';	
+				ELSIF 	(JSONVal1 = 'read error') 						THEN							com.sendCommand := 'read error';	
+				ELSIF 	(JSONVal1 = 'read files') 						THEN							com.sendCommand := 'read files';	
+				ELSIF 	(JSONVal1 = 'execute Gcode')					THEN							com.sendCommand := 'execute gcode';	
+				ELSIF 	(JSONVal1 = 'reset') 							THEN							com.sendCommand := 'reset';	
+				END_IF
+			2:
+				IF 		(JSONVal1 = 'show difference') 					THEN							com.sendCommand := 'show difference';
+																										com.object1		:= STRING_TO_INT(JSONVal2);	
+				ELSIF 	(JSONVal1 = 'show object') 						THEN							com.sendCommand := 'show object';
+																										com.object1		:= STRING_TO_INT(JSONVal2);	
+				ELSIF 	(JSONVal1 = 'delete difference') 				THEN							com.sendCommand := 'delete difference';
+																										com.object1		:= STRING_TO_INT(JSONVal2);	
+				ELSIF 	(JSONVal1 = 'turn difference') 					THEN							com.sendCommand := 'turn difference';
+																										com.object1		:= STRING_TO_INT(JSONVal2);
+				ELSIF 	(JSONVal1 = 'turn object') 						THEN							com.sendCommand := 'turn object';
+																										com.object1		:= STRING_TO_INT(JSONVal2);
+				ELSIF 	(JSONVal1 = 'X-axis') 							THEN							com.sendCommand := 'x-axis';
+																										com.goX		:= STRING_TO_INT(JSONVal2);
+				ELSIF 	(JSONVal1 = 'Y-axis') 							THEN							com.sendCommand := 'y-axis';
+																										com.goY		:= STRING_TO_INT(JSONVal2);
+				ELSIF 	(JSONVal1 = 'Z-axis') 							THEN							com.sendCommand := 'z-axis';
+																										com.goZ		:= STRING_TO_INT(JSONVal2);
+				ELSIF 	(JSONVal1 = 'Up') 								THEN							com.sendCommand := 'Up';
+																										com.goZ		:= STRING_TO_INT(JSONVal2);
+				ELSIF 	(JSONVal1 = 'Down') 							THEN							com.sendCommand := 'Down';
+																										com.goZ		:= STRING_TO_INT(JSONVal2);					
+				END_IF
+			4:
+				IF 		(JSONVal1 = 'X-axis' AND JSONVal3 = 'Y-axis')	THEN 							com.sendCommand := 'go xy';
+																										com.goX			:= STRING_TO_INT(JSONVal2);	
+																										com.goY			:= STRING_TO_INT(JSONVal4);		
+				ELSIF 	(JSONVal1 = 'combine difference') 				THEN							com.sendCommand := 'combine difference';
+																										com.object1		:= STRING_TO_INT(JSONVal2);	
+																										com.object2		:= STRING_TO_INT(JSONVal4);
+				ELSIF 	(JSONVal1 = 'combine object') 					THEN							com.sendCommand := 'combine object';
+																										com.object1		:= STRING_TO_INT(JSONVal2);	
+																										com.object2		:= STRING_TO_INT(JSONVal4);
+				END_IF													
+			6:
+				IF 		(JSONVal1 = 'X-axis' AND JSONVal3 = 'Y-axis' AND JSONVal5 = 'Z-axis') THEN		com.sendCommand := 'go xyz';
+																										com.goX			:= STRING_TO_INT(JSONVal2);	
+																										com.goY			:= STRING_TO_INT(JSONVal4);
+																										com.goZ			:= STRING_TO_INT(JSONVal6);
+				END_IF
+		END_CASE
+	END_IF
+	GVL.message_sub := '';
+	temp := recString;
+	recString := '';
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="decCOM_PLC">
+      <LineId Id="1651" Count="8" />
+      <LineId Id="1650" Count="0" />
+      <LineId Id="1649" Count="0" />
+      <LineId Id="1091" Count="2" />
+      <LineId Id="1100" Count="1" />
+      <LineId Id="1602" Count="1" />
+      <LineId Id="1102" Count="2" />
+      <LineId Id="1239" Count="0" />
+      <LineId Id="1608" Count="0" />
+      <LineId Id="1604" Count="0" />
+      <LineId Id="1391" Count="4" />
+      <LineId Id="1398" Count="4" />
+      <LineId Id="1597" Count="0" />
+      <LineId Id="1387" Count="0" />
+      <LineId Id="1601" Count="0" />
+      <LineId Id="1412" Count="1" />
+      <LineId Id="1418" Count="0" />
+      <LineId Id="1420" Count="0" />
+      <LineId Id="1428" Count="0" />
+      <LineId Id="1460" Count="0" />
+      <LineId Id="1501" Count="5" />
+      <LineId Id="1551" Count="0" />
+      <LineId Id="1550" Count="0" />
+      <LineId Id="1430" Count="0" />
+      <LineId Id="1434" Count="1" />
+      <LineId Id="1427" Count="0" />
+      <LineId Id="1436" Count="0" />
+      <LineId Id="1449" Count="0" />
+      <LineId Id="1429" Count="0" />
+      <LineId Id="1459" Count="0" />
+      <LineId Id="1458" Count="0" />
+      <LineId Id="1461" Count="0" />
+      <LineId Id="1463" Count="0" />
+      <LineId Id="1492" Count="0" />
+      <LineId Id="1491" Count="0" />
+      <LineId Id="1494" Count="0" />
+      <LineId Id="1493" Count="0" />
+      <LineId Id="1496" Count="0" />
+      <LineId Id="1495" Count="0" />
+      <LineId Id="1497" Count="1" />
+      <LineId Id="1500" Count="0" />
+      <LineId Id="1499" Count="0" />
+      <LineId Id="1424" Count="0" />
+      <LineId Id="1437" Count="0" />
+      <LineId Id="1447" Count="0" />
+      <LineId Id="1444" Count="1" />
+      <LineId Id="1472" Count="2" />
+      <LineId Id="1510" Count="1" />
+      <LineId Id="1509" Count="0" />
+      <LineId Id="1471" Count="0" />
+      <LineId Id="1438" Count="0" />
+      <LineId Id="1479" Count="0" />
+      <LineId Id="1508" Count="0" />
+      <LineId Id="1481" Count="0" />
+      <LineId Id="1591" Count="0" />
+      <LineId Id="1415" Count="0" />
+      <LineId Id="1414" Count="0" />
+      <LineId Id="133" Count="0" />
+      <LineId Id="815" Count="0" />
+      <LineId Id="1087" Count="0" />
+      <LineId Id="1086" Count="0" />
+      <LineId Id="135" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="MAIN_XYZ" Id="{f3e90440-582f-45a4-ac51-5f2449296ba8}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN_XYZ
+VAR
+	
+END_VAR
+
+    ]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//main program for gcode
+	//POU_NCI();
+
+//JSON
+	decCOM();
+	readJSONfile();
+	decFile();
+
+//AT Commands
+	commandDecoder();
+	commandExecute();
+
+//Error
+	ERROR();
+
+MAIN_MQTT();	]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN_XYZ">
+      <LineId Id="307" Count="0" />
+      <LineId Id="340" Count="0" />
+      <LineId Id="308" Count="0" />
+      <LineId Id="331" Count="0" />
+      <LineId Id="355" Count="1" />
+      <LineId Id="362" Count="0" />
+      <LineId Id="309" Count="0" />
+      <LineId Id="301" Count="0" />
+      <LineId Id="299" Count="0" />
+      <LineId Id="339" Count="0" />
+      <LineId Id="324" Count="0" />
+      <LineId Id="323" Count="0" />
+      <LineId Id="325" Count="0" />
+      <LineId Id="354" Count="0" />
+      <LineId Id="348" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

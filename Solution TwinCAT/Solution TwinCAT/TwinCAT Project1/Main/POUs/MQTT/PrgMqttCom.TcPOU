@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="PrgMqttCom" Id="{3b2be917-83cc-458a-ab8b-8055a76a6ef3}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM PrgMqttCom
+VAR
+	fbMqttClient : FB_IotMqttClient;
+	bSetParameter : BOOL := TRUE;
+	bConnect : BOOL := TRUE;
+	
+	(* published message *)
+	sTopicPub : STRING(255) := 'Test/Text_To_Speech';
+	sPayloadPub : STRING(255);
+	
+	hrErrorOccurred : HRESULT; // contains the latest occurred error
+END_VAR
+
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF bSetParameter THEN
+	bSetParameter := FALSE;
+	fbMqttClient.sHostName:= '192.168.1.205';
+	fbMqttClient.nHostPort:= 1883;
+	fbMqttClient.sTopicPrefix:= ''; 
+END_IF
+
+sPayloadPub := GVL.message_pub;
+
+IF NOT(GVL.flag_pub) THEN
+	fbMqttClient.Execute(bConnect);
+	IF fbMqttClient.bError THEN
+		hrErrorOccurred := fbMqttClient.hrErrorCode;
+	END_IF
+	IF fbMqttClient.bConnected THEN
+		GVL.flag_pub := TRUE;
+	END_IF
+END_IF
+
+IF GVL.flag_pub THEN
+		fbMqttClient.Publish(	sTopic:= sTopicPub, 
+								pPayload:= ADR(sPayloadPub), nPayloadSize:= LEN2(ADR(sPayloadPub)), 
+								eQoS:= TcIotMqttQos.AtMostOnceDelivery, bRetain:= FALSE, bQueue:= FALSE );
+		IF fbMqttClient.bError THEN
+			hrErrorOccurred := fbMqttClient.hrErrorCode;
+		END_IF
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="PrgMqttCom">
+      <LineId Id="180" Count="5" />
+      <LineId Id="269" Count="0" />
+      <LineId Id="230" Count="0" />
+      <LineId Id="232" Count="1" />
+      <LineId Id="235" Count="1" />
+      <LineId Id="238" Count="3" />
+      <LineId Id="234" Count="0" />
+      <LineId Id="187" Count="2" />
+      <LineId Id="191" Count="3" />
+      <LineId Id="196" Count="1" />
+      <LineId Id="204" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

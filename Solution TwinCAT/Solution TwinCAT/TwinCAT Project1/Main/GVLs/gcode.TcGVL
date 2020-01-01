@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <GVL Name="gcode" Id="{f58b9562-53a1-4d3c-a228-3a03bf0660ef}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	bBuildGroup	: BOOL;
+	bLoad		: BOOL;
+	bStart		: BOOL;
+	bStop		: BOOL;
+	bReset		: BOOL;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="decFile" Id="{545123ff-5673-497d-8cf4-0c94322715dd}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM decFile
+VAR
+	s1 : STRING(2000);
+	recString: STRING(2047);
+	
+	fbJson 				: FB_JsonDomParser;
+	jsonDoc 			: SJsonValue;
+	jsonDoc2 			: SJsonValue;
+	jsonProp			: SJsonValue;
+	jsonProp2			: SJsonValue;
+	jsontempval			: SJsonValue;
+	jsontempval2			: SJsonValue;
+	jsongettype			: Tc3_JsonXml.EJsonType;
+	jsonGetulint		: ULINT;
+	jsongetArraySize	: UDINT;
+	jsongetArray		: ARRAY[0..1000] OF SJsonValue;
+	jsongetArrayulint	: ULINT;
+	jsongetArrayudint	: UDINT;
+	
+	temp 				: STRING;
+	btest				: BOOL;
+	RisingEdge         : R_TRIG;
+	
+	JSONVal1 			: STRING;
+	JSONVal2 			: STRING;
+	
+	JSONstr 			: STRING;
+	getobj				: INT := 1;
+	tempint				: INT;
+	
+	JSONTEMP			: STRING(2047);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[s1 := com.JSONFile;
+RisingEdge(CLK:=btest);
+
+IF NOT(s1 = '' AND com.objectread) THEN
+	jsonDoc := fbJson.ParseDocument(s1);
+	jsonProp :=  fbJson.FindMember(jsonDoc, 'objects');;
+	tempint := com.objectNum -1;
+	
+	IF (jsonProp <> 0) THEN
+		jsongettype			:= fbJson.GetType(jsonProp);
+		jsongetArraySize	:= fbJson.GetArraySize(jsonProp);
+			jsontempval		:= fbJson.GetArrayValueByIdx(jsonProp, (INT_TO_UDINT (tempint) ) );
+			JSONTEMP		:= fbJson.GetJson( jsontempval );
+				jsonDoc2 			:= fbJson.ParseDocument(JSONTEMP);
+				jsonProp2			:= fbJson.FindMember(jsonDoc2, 'centrepointy');
+				JSONVal1 			:= fbJson.GetJson(jsonProp2);
+				com.objectx			:= STRING_TO_LREAL(JSONVal1);
+				
+				jsonProp2			:= fbJson.FindMember(jsonDoc2, 'centrepointx');
+				JSONVal2 			:= fbJson.GetJson(jsonProp2);
+				com.objecty			:= STRING_TO_LREAL(JSONVal2);
+	
+	END_IF
+	
+	btest := false;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="decFile">
+      <LineId Id="5" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="8" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="99" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="40" Count="2" />
+      <LineId Id="94" Count="0" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="132" Count="0" />
+      <LineId Id="134" Count="0" />
+      <LineId Id="96" Count="1" />
+      <LineId Id="133" Count="0" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="26" Count="2" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

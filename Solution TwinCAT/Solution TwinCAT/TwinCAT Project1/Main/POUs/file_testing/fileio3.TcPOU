@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.2">
+  <POU Name="fileio3" Id="{654dd14c-9787-456c-af97-d53e4a191c15}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM fileio3
+VAR
+	bdo:BOOL;
+	rdo:R_trig;
+
+	fopen:FB_FileOPen;
+	fclose:FB_Fileclose;
+	fRead:FB_FileRead;
+	fGet:FB_FileGets;
+	state: INT := 0;
+	buffRead                        :ARRAY[1..1000] OF BYTE;
+	cbcount : UDINT;
+	outstr : string;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[rdo(clk := bdo);
+
+CASE state OF
+	0:
+		IF rdo.Q THEN
+			bdo:=FALSE;
+			state :=1;
+		END_IF
+	1:
+			fopen(
+				sPathName := 'C:\0 0json\scan.json',
+				nMode := FOPEN_MODEREAD OR FOPEN_MODETEXT,
+				bExecute := TRUE,
+				tTimeout := T#15S);
+				
+				IF fopen.bBusy AND NOT fopen.bError THEN
+					state := 2;
+				END_IF
+	2: 
+			fRead(
+				hFile:=fopen.hFile,
+				pReadBuff:= ADR(buffRead), 
+				cbReadLen:= SIZEOF(buffRead),
+				cbRead => cbcount,
+				bExecute:=TRUE, 
+				tTimeout:=T#15S);
+
+				IF fRead.bBusy AND NOT fRead.bError THEN
+					state := 3;
+				END_IF
+	4: 
+			fget(hfile:=fopen.hFile, bExecute := TRUE, TTimeout := T#15S);
+			outstr := fget.sLine;
+			
+				IF fget.bBusy AND NOT fget.bError THEN
+					state := 3;
+				END_IF
+	3:
+		fclose(hFile := fopen.hFile,
+				bExecute := TRUE,
+				tTimeout:=T#5S);
+			IF fclose.bBusy AND NOT fclose.bError THEN
+				state := 0;
+			END_IF
+			
+	ELSE
+		state := 0;
+END_CASE
+]]></ST>
+    </Implementation>
+    <LineIds Name="fileio3">
+      <LineId Id="5" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="29" Count="2" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="35" Count="1" />
+      <LineId Id="39" Count="0" />
+      <LineId Id="41" Count="5" />
+      <LineId Id="57" Count="0" />
+      <LineId Id="60" Count="0" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="63" Count="0" />
+      <LineId Id="68" Count="0" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="66" Count="0" />
+      <LineId Id="70" Count="2" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="73" Count="2" />
+      <LineId Id="80" Count="0" />
+      <LineId Id="77" Count="1" />
+      <LineId Id="76" Count="0" />
+      <LineId Id="47" Count="1" />
+      <LineId Id="51" Count="1" />
+      <LineId Id="55" Count="1" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="33" Count="1" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="21" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
